@@ -8,11 +8,20 @@ function App() {
   const startTimer = () => {
     // Lógica para iniciar el temporizador
   };
+  
+  const pauseTimer = () => {
+    // Lógica para pausar el temporizador
+  };
   return (
     <div className="App">
        <h1>🍅 NeuroStudy Quest</h1>  {/* ✅ Nuestro título personalizado */}
       <p>Tu RPG de Pomodoros</p>  {/* ✅ Nuestra descripción */}
-    </div>
+    
+
+    <div>
+      <button onClick={startTimer}>Iniciar</button> /* ✅ Botón para iniciar */
+      <button onClick={pauseTimer}>Pausar</button> /* ✅ Botón para pausar */
+      </div></div>
   );
 
   // fin de las 3 lineas nuevas
