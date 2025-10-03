@@ -25,7 +25,7 @@ function App() {
   return (
     <div className="App">
        <h1>🍅 NeuroStudy Quest</h1>  {/* ✅ Nuestro título personalizado */}
-      <p>Tu RPG de Pomodoros</p>  {/* ✅ Nuestra descripción */}
+      <p>RPG de Pomodoros</p>  {/* ✅ Nuestra descripción */}
     
        <h2>Tiempo: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</h2>
 
