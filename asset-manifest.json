@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/pomodoro-gamefied/static/css/main.f855e6bc.css",
-    "main.js": "/pomodoro-gamefied/static/js/main.7fbd919e.js",
+    "main.js": "/pomodoro-gamefied/static/js/main.e9156679.js",
     "static/js/453.9d73228d.chunk.js": "/pomodoro-gamefied/static/js/453.9d73228d.chunk.js",
     "index.html": "/pomodoro-gamefied/index.html",
     "main.f855e6bc.css.map": "/pomodoro-gamefied/static/css/main.f855e6bc.css.map",
-    "main.7fbd919e.js.map": "/pomodoro-gamefied/static/js/main.7fbd919e.js.map",
+    "main.e9156679.js.map": "/pomodoro-gamefied/static/js/main.e9156679.js.map",
     "453.9d73228d.chunk.js.map": "/pomodoro-gamefied/static/js/453.9d73228d.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f855e6bc.css",
-    "static/js/main.7fbd919e.js"
+    "static/js/main.e9156679.js"
   ]
 }
