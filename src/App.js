@@ -20,7 +20,7 @@ function App() {
   useEffect(() => {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
-    document.title = `🍅 ${minutes}:${seconds.toString().padStart(2, '0')}`;
+    document.title = `${minutes}:${seconds.toString().padStart(2, '0')}`;
   }, [timeLeft]);
 
   useEffect(() => {
