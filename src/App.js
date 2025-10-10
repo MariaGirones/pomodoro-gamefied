@@ -20,7 +20,7 @@ function App() {
   useEffect(() => {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
-    document.title = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    document.title = `🍅 ${minutes}:${seconds.toString().padStart(2, '0')}`;
   }, [timeLeft]);
 
   useEffect(() => {
@@ -73,6 +73,16 @@ function App() {
     }
   };
 
+  const restartTimer = () => {
+  // 1. Detener el temporizador si está corriendo
+  if (intervalId) {
+    clearInterval(intervalId);
+    setIntervalId(null);
+  }
+  // 2. Reiniciar el tiempo a 25 minutos
+  setTimeLeft(25 * 60);
+};
+
   return (
     <>
       {showWelcome && (
@@ -100,8 +110,9 @@ function App() {
         <p>Focus in 25-minute bursts. Build momentum. Build consistency. Build success.</p>
         <h2>Tiempo: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</h2>
         <div>
-          <button onClick={startTimer}>Iniciar</button> 
-          <button onClick={pauseTimer}>Pausar</button> 
+          <button onClick={startTimer}>Start</button> 
+          <button onClick={pauseTimer}>Pause</button> 
+           <button onClick={restartTimer}>Restart</button>
         </div>
       </div>
     </>
