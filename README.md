@@ -1,70 +1,53 @@
-# Getting Started with Create React App
+# 🍅 NeuroStudy Quest
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**Your gamified Pomodoro timer for focused study sessions!**  
+*Make as many as you need. Be consistent. Build better study habits, one pomodoro at a time.*
 
-## Available Scripts
+## 🎯 What is this?
 
-In the project directory, you can run:
+A beautiful, functional Pomodoro timer built with React that helps you:
+- 🕒 **Focus in 25-minute bursts** 
+- 🎵 **Get sound notifications** when time's up
+- 📱 **See time in browser tab** while multitasking
+- ⏸️ **Pause and resume** your sessions
+- 🎮 **Make studying fun** with gamified elements
 
-### `npm start`
+## ✨ Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- ✅ **25-minute focus timer** with auto-stop
+- ✅ **Start/Pause functionality** 
+- ✅ **Dynamic browser title** showing remaining time
+- ✅ **Custom sound alert** when pomodoro completes
+- ✅ **Mobile-friendly** responsive design
+- ✅ **Deployed and live** on GitHub Pages
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🚀 Live Demo
 
-### `npm test`
+**[👉 Try it live here!](https://MariaGirones.github.io/pomodoro-gamefied)**
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🛠️ Built With
 
-### `npm run build`
+- ⚛️ React
+- 🎨 CSS3
+- 🔊 Web Audio API
+- 📦 GitHub Pages
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🧠 The Psychology Behind It
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+As a psychologist, I built this app incorporating:
+- **Pomodoro Technique** for sustained focus
+- **Gamification elements** to build consistency  
+- **Visual feedback** for motivation
+- **Accessible design** considering cognitive load
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 🎵 Sound Credit
 
-### `npm run eject`
+Custom alert sound created for optimal focus interruption - gentle yet noticeable!
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+*Built with 💜 by a psychology student who understands the struggle of staying focused!*
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**⭐ Star this repo if it helps your study sessions!**
