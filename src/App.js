@@ -1,8 +1,19 @@
 import './App.css';
 import { useState, useEffect } from 'react';
 
+// sacar audio fuera del componente para que no se recargue cada vez
+let audio = null;
+
+const preloadAudio = () => {
+  if (!audio) {
+    audio = new Audio(process.env.PUBLIC_URL + '/endOfPomodoro.wav');
+    audio.load();
+  }
+};
+// code starts here
+
 function App() {
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
   const [intervalId, setIntervalId] = useState(null);
   const [showWelcome, setShowWelcome] = useState(true);
 
@@ -12,9 +23,31 @@ function App() {
     document.title = `🍅 ${minutes}:${seconds.toString().padStart(2, '0')}`;
   }, [timeLeft]);
 
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+    preloadAudio(); // Preload audio on component mount
+  }, []);
+
+  // play sound function
   const playSound = () => {
-    const audio = new Audio(process.env.PUBLIC_URL + '/endOfPomodoro.wav');
-    audio.play();
+    if (!audio) {
+      preloadAudio();
+    }
+    audio.currentTime = 0;
+    audio.play().catch(e => {
+      console.log('Audio no pudo reproducirse:', e);
+    });
+  };
+
+  const showNotification = () => { 
+    if (!("Notification" in window)) {
+      alert("This browser does not support desktop notification");
+    }
+    else if (Notification.permission === "granted") {
+      new Notification("🍅 Time's up! Take a break or start a new session. Great job btw!");
+    }
   };
 
   const startTimer = () => {
@@ -24,6 +57,7 @@ function App() {
           clearInterval(id);
           setIntervalId(null);
           playSound();
+          showNotification();
           return 0;
         }
         return prevTime - 1;
@@ -44,7 +78,7 @@ function App() {
       {showWelcome && (
         <div className="welcome-modal">
           <div className="modal-content">
-            <h3>🎯 ¡Welcome!</h3>
+            <h3>🍅 ¡Welcome!</h3>
             <p><strong>Keep in mind:</strong></p>
             <ul>
               <li>🔔 <strong>Notifications:</strong> Always visible, even with inactive tab</li>
