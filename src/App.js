@@ -13,9 +13,10 @@ const preloadAudio = () => {
 // code starts here
 
 function App() {
-  const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(25*60); // 25 minutes in seconds
   const [intervalId, setIntervalId] = useState(null);
   const [showWelcome, setShowWelcome] = useState(true);
+  const [worker, setWorker] = useState(null);
 
   useEffect(() => {
     const minutes = Math.floor(timeLeft / 60);
@@ -24,11 +25,39 @@ function App() {
   }, [timeLeft]);
 
   useEffect(() => {
+  const timerWorker = new Worker(`${process.env.PUBLIC_URL}/timer-worker.js`);
+  setWorker(timerWorker);
+  
+  return () => {
+    timerWorker.terminate();
+  };
+}, []);
+
+  useEffect(() => {
     if ("Notification" in window && Notification.permission === "default") {
       Notification.requestPermission();
     }
     preloadAudio(); // Preload audio on component mount
   }, []);
+
+  useEffect(() => {
+  if (!worker) return; // Esperar hasta que el worker esté listo
+
+  worker.onmessage = (event) => {
+    if (event.data === 'tick') {
+      setTimeLeft(prevTime => {
+        if (prevTime <= 1) {
+          worker.postMessage('stop');     // Decirle al worker que se detenga
+          setIntervalId(null);            // Limpiar nuestro estado
+          playSound();                    // Sonar alarma
+          showNotification();             // Mostrar notificación
+          return 0;                       // Poner tiempo en 0
+        }
+        return prevTime - 1;              // Restar 1 segundo
+      });
+    }
+  };
+}, [worker]); // Solo se ejecuta cuando 'worker' cambia
 
   // play sound function
   const playSound = () => {
@@ -51,35 +80,24 @@ function App() {
   };
 
   const startTimer = () => {
-    const id = setInterval(() => {
-      setTimeLeft(prevTime => {
-        if (prevTime <= 1) {
-          clearInterval(id);
-          setIntervalId(null);
-          playSound();
-          showNotification();
-          return 0;
-        }
-        return prevTime - 1;
-      });
-    }, 1000);
-    setIntervalId(id);
-  };
+  if (worker) {
+    worker.postMessage('start'); // 🆕 Decirle al Worker que inicie
+    setIntervalId(true); // 🆕 Marcamos que el timer está activo
+  }
+};
   
   const pauseTimer = () => {
-    if (intervalId) {
-      clearInterval(intervalId);
-      setIntervalId(null);
-    }
-  };
-
-  const restartTimer = () => {
-  // 1. Detener el temporizador si está corriendo
-  if (intervalId) {
-    clearInterval(intervalId);
+  if (worker && intervalId) {
+    worker.postMessage('stop'); // 🆕 Decirle al Worker que se detenga
     setIntervalId(null);
   }
-  // 2. Reiniciar el tiempo a 25 minutos
+};
+
+  const restartTimer = () => {
+  if (worker && intervalId) {
+    worker.postMessage('stop'); // 🆕 Detener Worker si está corriendo
+  }
+  setIntervalId(null);
   setTimeLeft(25 * 60);
 };
 
