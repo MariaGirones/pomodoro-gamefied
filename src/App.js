@@ -13,10 +13,15 @@ const preloadAudio = () => {
 // code starts here
 
 function App() {
-  const [timeLeft, setTimeLeft] = useState(25*60); // 25 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
   const [intervalId, setIntervalId] = useState(null);
   const [showWelcome, setShowWelcome] = useState(true);
   const [worker, setWorker] = useState(null);
+   const [mode, setMode] = useState('focus'); // 'focus' or 'break'
+  const [durations, setDurations] = useState({
+    focus: 25 * 60,    // 25 minutes in seconds
+    break: 5 * 60      // 5 minutes in seconds
+  });
 
   useEffect(() => {
     const minutes = Math.floor(timeLeft / 60);
@@ -33,31 +38,35 @@ function App() {
   };
 }, []);
 
-  useEffect(() => {
-    if ("Notification" in window && Notification.permission === "default") {
-      Notification.requestPermission();
-    }
-    preloadAudio(); // Preload audio on component mount
-  }, []);
-
-  useEffect(() => {
-  if (!worker) return; // Esperar hasta que el worker esté listo
+ useEffect(() => {
+  if (!worker) return;
 
   worker.onmessage = (event) => {
     if (event.data === 'tick') {
       setTimeLeft(prevTime => {
         if (prevTime <= 1) {
-          worker.postMessage('stop');     // Decirle al worker que se detenga
-          setIntervalId(null);            // Limpiar nuestro estado
-          playSound();                    // Sonar alarma
-          showNotification();             // Mostrar notificación
-          return 0;                       // Poner tiempo en 0
+          console.log('🔄 Cambiando modo de:', mode);
+          worker.postMessage('stop');
+          setIntervalId(null);
+          playSound();
+          showNotification();
+          
+          // 🆕 PREVENIR MÚLTIPLES EJECUCIONES
+          if (prevTime === 0) return 0;
+          
+          if (mode === 'focus') {
+            setMode('break');
+            return durations.break;
+          } else {
+            setMode('focus');
+            return durations.focus;
+          }
         }
-        return prevTime - 1;              // Restar 1 segundo
+        return prevTime - 1;
       });
     }
   };
-}, [worker]); // Solo se ejecuta cuando 'worker' cambia
+}, [worker, mode, durations]); // Solo se ejecuta cuando 'worker' cambia
 
   // play sound function
   const playSound = () => {
@@ -81,8 +90,9 @@ function App() {
 
   const startTimer = () => {
   if (worker) {
-    worker.postMessage('start'); // 🆕 Decirle al Worker que inicie
-    setIntervalId(true); // 🆕 Marcamos que el timer está activo
+    setTimeLeft(durations[mode]);  // 🎯 TIEMPO DEL MODO ACTUAL
+    worker.postMessage('start');
+    setIntervalId(true);
   }
 };
   
@@ -126,7 +136,9 @@ function App() {
       <div className="App">
         <h1>🍅 NeuroStudy Quest</h1>
         <p>Focus in 25-minute bursts. Build momentum. Build consistency. Build success.</p>
-        <h2>Tiempo: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</h2>
+       <h2>{mode === 'focus' ? '🍅 Focus Time' : '☕ Break Time'}: 
+           {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+       </h2>
         <div>
           <button onClick={startTimer}>Start</button> 
           <button onClick={pauseTimer}>Pause</button> 
