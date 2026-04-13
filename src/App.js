@@ -1,7 +1,7 @@
 import './App.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-// sacar audio fuera del componente para que no se recargue cada vez
+// Audio is created outside the component so it is never recreated on re-render
 let audio = null;
 
 const preloadAudio = () => {
@@ -10,18 +10,23 @@ const preloadAudio = () => {
     audio.load();
   }
 };
-// code starts here
 
 function App() {
-  const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
-  const [intervalId, setIntervalId] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const [isRunning, setIsRunning] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const [worker, setWorker] = useState(null);
-   const [mode, setMode] = useState('focus'); // 'focus' or 'break'
-  const [durations, setDurations] = useState({
-    focus: 25 * 60,    // 25 minutes in seconds
-    break: 5 * 60      // 5 minutes in seconds
+  const [mode, setMode] = useState('focus'); // 'focus' or 'break'
+  const [durations] = useState({
+    focus: 25 * 60,
+    break: 5 * 60,
   });
+
+  // Refs let the worker onmessage handler always read the latest values
+  // without needing to re-register the handler on every mode/durations change
+  const modeRef = useRef(mode);
+  const durationsRef = useRef(durations);
+  useEffect(() => { modeRef.current = mode; }, [mode]);
 
   useEffect(() => {
     const minutes = Math.floor(timeLeft / 60);
@@ -30,86 +35,86 @@ function App() {
   }, [timeLeft]);
 
   useEffect(() => {
-  const timerWorker = new Worker(`${process.env.PUBLIC_URL}/timer-worker.js`);
-  setWorker(timerWorker);
-  
-  return () => {
-    timerWorker.terminate();
-  };
-}, []);
+    const timerWorker = new Worker(`${process.env.PUBLIC_URL}/timer-worker.js`);
+    setWorker(timerWorker);
+    return () => {
+      timerWorker.terminate();
+    };
+  }, []);
 
- useEffect(() => {
-  if (!worker) return;
+  useEffect(() => {
+    if (!worker) return;
 
-  worker.onmessage = (event) => {
-    if (event.data === 'tick') {
-      setTimeLeft(prevTime => {
-        if (prevTime <= 1) {
-          console.log('🔄 Cambiando modo de:', mode);
-          worker.postMessage('stop');
-          setIntervalId(null);
-          playSound();
-          showNotification();
-          
-          // 🆕 PREVENIR MÚLTIPLES EJECUCIONES
-          if (prevTime === 0) return 0;
-          
-          if (mode === 'focus') {
-            setMode('break');
-            return durations.break;
-          } else {
-            setMode('focus');
-            return durations.focus;
+    worker.onmessage = (event) => {
+      if (event.data === 'tick') {
+        setTimeLeft(prevTime => {
+          if (prevTime <= 1) {
+            worker.postMessage('stop');
+            setIsRunning(false);
+            playSound();
+            showNotification();
+
+            // Guard against double-firing if state was already at 0
+            if (prevTime === 0) return 0;
+
+            if (modeRef.current === 'focus') {
+              setMode('break');
+              return durationsRef.current.break;
+            } else {
+              setMode('focus');
+              return durationsRef.current.focus;
+            }
           }
-        }
-        return prevTime - 1;
-      });
-    }
-  };
-}, [worker, mode, durations]); // Solo se ejecuta cuando 'worker' cambia
+          return prevTime - 1;
+        });
+      }
+    };
+  }, [worker]); // Only re-register when the worker instance changes
 
-  // play sound function
   const playSound = () => {
-    if (!audio) {
-      preloadAudio();
-    }
+    if (!audio) preloadAudio();
     audio.currentTime = 0;
-    audio.play().catch(e => {
-      console.log('Audio no pudo reproducirse:', e);
+    audio.play().catch(() => {
+      // Audio playback can be blocked by the browser before a user gesture
     });
   };
 
-  const showNotification = () => { 
-    if (!("Notification" in window)) {
-      alert("This browser does not support desktop notification");
-    }
-    else if (Notification.permission === "granted") {
-      new Notification("🍅 Time's up! Take a break or start a new session. Great job btw!");
+  const showNotification = () => {
+    if (!('Notification' in window)) return;
+    if (Notification.permission === 'granted') {
+      new Notification("🍅 Time's up! Take a break or start a new session. Great job!");
     }
   };
 
-  const startTimer = () => {
-  if (worker) {
-    setTimeLeft(durations[mode]);  // 🎯 TIEMPO DEL MODO ACTUAL
-    worker.postMessage('start');
-    setIntervalId(true);
-  }
-};
-  
-  const pauseTimer = () => {
-  if (worker && intervalId) {
-    worker.postMessage('stop'); // 🆕 Decirle al Worker que se detenga
-    setIntervalId(null);
-  }
-};
+  const requestNotificationPermission = () => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  };
 
+  // Start resumes from wherever the timer is paused; it does not reset
+  const startTimer = () => {
+    if (worker && !isRunning) {
+      worker.postMessage('start');
+      setIsRunning(true);
+    }
+  };
+
+  const pauseTimer = () => {
+    if (worker && isRunning) {
+      worker.postMessage('stop');
+      setIsRunning(false);
+    }
+  };
+
+  // Restart stops the timer and resets to the full duration of the current mode
   const restartTimer = () => {
-  if (worker && intervalId) {
-    worker.postMessage('stop'); // 🆕 Detener Worker si está corriendo
-  }
-  setIntervalId(null);
-  setTimeLeft(25 * 60);
-};
+    if (worker && isRunning) {
+      worker.postMessage('stop');
+    }
+    setIsRunning(false);
+    setTimeLeft(durations[mode]);
+  };
 
   return (
     <>
@@ -125,7 +130,7 @@ function App() {
             </ul>
             <button 
               className="got-it-btn"
-              onClick={() => setShowWelcome(false)}
+              onClick={() => { requestNotificationPermission(); setShowWelcome(false); }}
             >
               ¡Ok, START!
             </button>
