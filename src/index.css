@@ -31,8 +31,23 @@ code {
   padding: 2rem;
   border-radius: 15px;
   max-width: 500px;
+  width: calc(100% - 2rem);
   margin: 1rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Wider variant for the pet picker grid */
+.modal-wide {
+  max-width: 560px;
+}
+
+.modal-sub {
+  text-align: center;
+  color: #777;
+  font-size: 0.9rem;
+  margin: 0 0 0.5rem;
 }
 
 .modal-content h3 {

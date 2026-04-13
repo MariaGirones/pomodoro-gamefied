@@ -1,7 +1,10 @@
 import './App.css';
 import { useState, useEffect, useRef } from 'react';
+import PetDisplay from './PetDisplay';
+import PetPicker from './PetPicker';
+import { MAX_XP } from './pets';
 
-// Audio singleton — created once, never re-created on re-render
+// ── Audio singleton ───────────────────────────────────────────────────────────
 let audio = null;
 function preloadAudio() {
   if (!audio) {
@@ -10,9 +13,10 @@ function preloadAudio() {
   }
 }
 
+// ── Timer constants ───────────────────────────────────────────────────────────
 const SHORT_BREAK_SECS = 5 * 60;
-const LONG_BREAK_SECS = 15 * 60;
-const CYCLE_LENGTH = 4;
+const LONG_BREAK_SECS  = 15 * 60;
+const CYCLE_LENGTH     = 4;
 
 function getDuration(mode, workSecs) {
   if (mode === 'work') return workSecs;
@@ -20,40 +24,66 @@ function getDuration(mode, workSecs) {
   return LONG_BREAK_SECS;
 }
 
-// Returns the mode and pomodoro count for the session that follows the current one
 function nextSession(mode, count) {
   if (mode === 'work') {
     if (count >= CYCLE_LENGTH) return { nextMode: 'longBreak', nextCount: count };
     return { nextMode: 'shortBreak', nextCount: count };
   }
-  // Break ended → back to work
   const nextCount = mode === 'longBreak' ? 1 : count + 1;
   return { nextMode: 'work', nextCount };
 }
 
+// ── localStorage helpers ──────────────────────────────────────────────────────
+const LS_XP  = 'nsq_xp';
+const LS_PET = 'nsq_pet';
+
+function loadXP() {
+  const raw = parseInt(localStorage.getItem(LS_XP), 10);
+  return isNaN(raw) ? 0 : Math.min(MAX_XP, Math.max(0, raw));
+}
+
+function loadPetId() {
+  return localStorage.getItem(LS_PET) ?? 'tomato';
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
 function App() {
-  const [workMinutes, setWorkMinutes] = useState(25);
-  const [pomodoroCount, setPomodoroCount] = useState(1); // 1–CYCLE_LENGTH
-  const [mode, setMode] = useState('work');              // 'work' | 'shortBreak' | 'longBreak'
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
-  const [isRunning, setIsRunning] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(true);
-  const [worker, setWorker] = useState(null);
-  const [alerting, setAlerting] = useState(false);
+  // Timer state
+  const [workMinutes, setWorkMinutes]   = useState(25);
+  const [pomodoroCount, setPomodoroCount] = useState(1);
+  const [mode, setMode]                 = useState('work');
+  const [timeLeft, setTimeLeft]         = useState(25 * 60);
+  const [isRunning, setIsRunning]       = useState(false);
+  const [worker, setWorker]             = useState(null);
+  const [alerting, setAlerting]         = useState(false);
 
-  // Refs for values that need to be read inside async contexts (worker callbacks,
-  // effects) without adding them to dependency arrays and without stale closures.
-  const modeRef = useRef('work');
+  // Pet & XP state (persisted)
+  const [xp, setXP]                     = useState(loadXP);
+  const [chosenPetId, setChosenPetId]   = useState(loadPetId);
+  const [xpGainCount, setXpGainCount]   = useState(0); // drives bounce animation
+
+  // UI state
+  const [showWelcome, setShowWelcome]   = useState(true);
+  const [showPetPicker, setShowPetPicker] = useState(false);
+
+  // Refs — values readable inside async contexts without stale closures
+  const modeRef          = useRef('work');
   const pomodoroCountRef = useRef(1);
-  const workSecsRef = useRef(25 * 60);
-  const isRunningRef = useRef(false);
-  const workerRef = useRef(null);
+  const workSecsRef      = useRef(25 * 60);
+  const isRunningRef     = useRef(false);
+  const workerRef        = useRef(null);
+  const xpRef            = useRef(loadXP());
 
-  // Keep refs in sync with state
+  // Keep refs in sync
   useEffect(() => { modeRef.current = mode; }, [mode]);
   useEffect(() => { pomodoroCountRef.current = pomodoroCount; }, [pomodoroCount]);
   useEffect(() => { workSecsRef.current = workMinutes * 60; }, [workMinutes]);
   useEffect(() => { isRunningRef.current = isRunning; }, [isRunning]);
+  useEffect(() => { xpRef.current = xp; }, [xp]);
+
+  // Persist XP and pet choice to localStorage
+  useEffect(() => { localStorage.setItem(LS_XP, xp); }, [xp]);
+  useEffect(() => { localStorage.setItem(LS_PET, chosenPetId); }, [chosenPetId]);
 
   // Browser tab title
   useEffect(() => {
@@ -62,7 +92,7 @@ function App() {
     document.title = `🍅 ${m}:${s.toString().padStart(2, '0')}`;
   }, [timeLeft]);
 
-  // Create the worker once on mount
+  // Create the worker once
   useEffect(() => {
     const timerWorker = new Worker(`${process.env.PUBLIC_URL}/timer-worker.js`);
     workerRef.current = timerWorker;
@@ -70,8 +100,7 @@ function App() {
     return () => timerWorker.terminate();
   }, []);
 
-  // Wire up the worker's message handler — only needs to change when the
-  // worker instance itself changes (i.e. once).
+  // Wire up the tick handler — re-registers only when the worker instance changes
   useEffect(() => {
     if (!worker) return;
     worker.onmessage = (event) => {
@@ -80,47 +109,52 @@ function App() {
     };
   }, [worker]);
 
-  // Session-end: fires whenever timeLeft reaches 0 while the timer is running.
-  // Side effects live here instead of inside the setState updater.
+  // ── Session-end effect ────────────────────────────────────────────────────
+  // Fires when timeLeft reaches 0 while the timer is running.
+  // All side-effects live here — not inside the setState updater.
   useEffect(() => {
     if (timeLeft !== 0 || !isRunningRef.current) return;
 
-    // Stop the worker
     workerRef.current?.postMessage('stop');
     isRunningRef.current = false;
     setIsRunning(false);
 
-    // Visual flash alert
+    // Flash alert
     setAlerting(true);
     setTimeout(() => setAlerting(false), 1500);
 
     // Sound
     preloadAudio();
     audio.currentTime = 0;
-    audio.play().catch(() => {
-      // Blocked before a user gesture — silently ignore
-    });
+    audio.play().catch(() => {});
 
     // Desktop notification
     if ('Notification' in window && Notification.permission === 'granted') {
       const labels = {
-        work: "🍅 Work session done! Time for a break.",
-        shortBreak: "☕ Break over — back to work!",
-        longBreak: "🛋️ Long break over — new cycle starts!",
+        work:       '🍅 Work session done! Time for a break.',
+        shortBreak: '☕ Break over — back to work!',
+        longBreak:  '🛋️ Long break over — new cycle starts!',
       };
       new Notification(labels[modeRef.current] ?? "🍅 Time's up!");
     }
 
-    // Advance to the next session
+    // ── Award XP for completed work sessions ──────────────────────────────
+    if (modeRef.current === 'work') {
+      const earned = Math.floor(workSecsRef.current / 60); // 1 XP per full minute
+      const newXP  = Math.min(MAX_XP, xpRef.current + earned);
+      xpRef.current = newXP;
+      setXP(newXP);
+      setXpGainCount(c => c + 1); // triggers pet bounce animation
+    }
+
+    // ── Advance session ───────────────────────────────────────────────────
     const { nextMode, nextCount } = nextSession(modeRef.current, pomodoroCountRef.current);
-    modeRef.current = nextMode;
+    modeRef.current          = nextMode;
     pomodoroCountRef.current = nextCount;
     setMode(nextMode);
     setPomodoroCount(nextCount);
     setTimeLeft(getDuration(nextMode, workSecsRef.current));
   }, [timeLeft]); // eslint-disable-line react-hooks/exhaustive-deps
-  // ^ All other values are accessed via refs — intentional, to avoid re-registering
-  //   on every mode/count/duration change while still reading current values.
 
   // ── Controls ──────────────────────────────────────────────────────────────
 
@@ -140,7 +174,6 @@ function App() {
     }
   };
 
-  // Restart resets time for the current mode without switching modes
   const restartTimer = () => {
     if (isRunningRef.current) {
       workerRef.current?.postMessage('stop');
@@ -161,18 +194,17 @@ function App() {
     const val = Math.min(90, Math.max(1, isNaN(raw) ? 1 : raw));
     setWorkMinutes(val);
     workSecsRef.current = val * 60;
-    // Live-update the display only when not mid-session
     if (!isRunningRef.current && modeRef.current === 'work') {
       setTimeLeft(val * 60);
     }
   };
 
-  // ── Derived display values ─────────────────────────────────────────────────
+  // ── Derived display values ────────────────────────────────────────────────
 
   const completedInCycle =
-    mode === 'work'       ? pomodoroCount - 1 :
-    mode === 'longBreak'  ? CYCLE_LENGTH :
-    /* shortBreak */        pomodoroCount;
+    mode === 'work'      ? pomodoroCount - 1 :
+    mode === 'longBreak' ? CYCLE_LENGTH :
+    /* shortBreak */       pomodoroCount;
 
   const modeLabel =
     mode === 'work'       ? '🍅 Work Session' :
@@ -193,19 +225,21 @@ function App() {
 
   return (
     <>
+      {/* ── Onboarding: choose a companion ── */}
       {showWelcome && (
         <div className="welcome-modal">
-          <div className="modal-content">
-            <h3>🍅 Welcome!</h3>
-            <p><strong>Good to know:</strong></p>
-            <ul>
-              <li>🔔 <strong>Notifications</strong> work even with the tab inactive</li>
-              <li>🎵 <strong>Sound</strong> plays when the tab is active</li>
-              <li>⏱️ <strong>Timer</strong> is drift-corrected — it won't fall behind</li>
-            </ul>
+          <div className="modal-content modal-wide">
+            <h3>🍅 Choose your study companion</h3>
+            <p className="modal-sub">
+              It grows as you earn XP from focus sessions.
+            </p>
+            <PetPicker currentPetId={chosenPetId} onSelect={setChosenPetId} />
             <button
               className="got-it-btn"
-              onClick={() => { requestNotificationPermission(); setShowWelcome(false); }}
+              onClick={() => {
+                requestNotificationPermission();
+                setShowWelcome(false);
+              }}
             >
               Let's go!
             </button>
@@ -213,9 +247,41 @@ function App() {
         </div>
       )}
 
+      {/* ── Change-pet modal (accessible from main screen) ── */}
+      {showPetPicker && (
+        <div className="welcome-modal">
+          <div className="modal-content modal-wide">
+            <h3>🐾 Change companion</h3>
+            <p className="modal-sub">Your XP is kept — only the look changes.</p>
+            <PetPicker currentPetId={chosenPetId} onSelect={setChosenPetId} />
+            <button
+              className="got-it-btn"
+              onClick={() => setShowPetPicker(false)}
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Main app ── */}
       <div className={`App mode-${mode}${alerting ? ' alerting' : ''}`}>
         <h1>🍅 NeuroStudy Quest</h1>
 
+        {/* Pet + XP */}
+        <PetDisplay petId={chosenPetId} xp={xp} gainCount={xpGainCount} />
+
+        <button
+          className="change-pet-btn"
+          onClick={() => setShowPetPicker(true)}
+          aria-label="Change companion"
+        >
+          🐾 Change companion
+        </button>
+
+        <hr className="divider" />
+
+        {/* Timer */}
         <div className="session-info">
           <span className="mode-label">{modeLabel}</span>
           <span className="sub-label">{subLabel}</span>
@@ -231,7 +297,7 @@ function App() {
               key={i}
               className={[
                 'dot',
-                i < completedInCycle               ? 'done'   : '',
+                i < completedInCycle                       ? 'done'   : '',
                 i === pomodoroCount - 1 && mode === 'work' ? 'active' : '',
               ].filter(Boolean).join(' ')}
               aria-label={`Pomodoro ${i + 1}`}
