@@ -126,7 +126,7 @@ function App() {
   useEffect(() => {
     const m = Math.floor(timeLeft / 60);
     const s = timeLeft % 60;
-    document.title = `🍅 ${m}:${s.toString().padStart(2, '0')}`;
+    document.title = `🍅 PomoSprite ${m}:${s.toString().padStart(2, '0')}`;
   }, [timeLeft]);
 
   // Create the worker once
@@ -363,7 +363,7 @@ function App() {
       {/* ── Main app ── */}
       <div className={`App mode-${mode}${alerting ? ' alerting' : ''}`}>
         <div className="top-bar">
-          <h1>🍅 NeuroStudy Quest</h1>
+          <h1>🍅 PomoSprite</h1>
           <div className="top-bar-actions">
             <button
               className="settings-btn"

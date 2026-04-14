@@ -1,74 +1,65 @@
-# 🍅 NeuroStudy Quest
+# 🍅 PomoSprite
 
-**A gamified Pomodoro timer with pixel art companion pets.**  
-*Stay focused. Earn XP. Watch your pet grow.*
+**A gamified Pomodoro timer where you earn XP from focus sessions to feed and evolve a pixel pet.**
+
+> Stay focused. Earn XP. Watch your sprite grow.
 
 ## 🚀 Live Demo
 
-**[👉 Try it live here!](https://MariaGirones.github.io/pomodoro-gamefied)**
+**[👉 pomosprite.github.io/pomodoro-gamefied](https://MariaGirones.github.io/pomodoro-gamefied)**
+
+---
+
+## 🐾 How it works
+
+1. Pick a pixel pet companion (Cat, Dog, Dragon, Bunny, Fox, or Axolotl)
+2. Start a Pomodoro focus session
+3. Complete the session → earn XP (1 XP per minute worked)
+4. Your pet evolves at **334 XP** and again at **667 XP**, maxing out at **1000 XP**
+5. Take your short or long break, then go again
+
+Your pet, XP, settings, and cycle progress are all saved automatically — nothing is lost on refresh.
 
 ---
 
 ## ✨ Features
 
-- **Pixel art companion pets** — choose from Cat, Dog, Dragon, Bunny, Fox, or Axolotl. Each has 3 evolution stages drawn with canvas-based pixel art sprites.
-- **XP & leveling system** — earn 1 XP per minute of focused work. Your pet evolves at 334 XP (mid) and 667 XP (final form), maxing out at 1000 XP.
-- **Drift-free Pomodoro timer** — uses a Web Worker with `Date.now()`-based correction so the timer never drifts, even when the tab is in the background.
-- **Full Pomodoro cycle** — 4 work sessions → short breaks → long break, with cycle progress dots.
-- **Custom work duration** — set any work session length from 1 to 90 minutes.
-- **Sound + desktop notifications** — audio alert and browser notification when a session ends.
-- **Retro pixel aesthetic** — Press Start 2P font, NES-style XP bar, CRT scanline overlay, neon glow on the timer.
-- **Dark / light mode toggle** — persisted across sessions. Light mode uses a pastel retro palette.
-- **Full localStorage persistence** — pet, XP, dark mode, work duration, and Pomodoro cycle progress all survive page refresh.
-- **Mobile-friendly** — responsive layout down to 320px wide.
+- **6 pixel art companions** — each with 3 evolution stages, drawn on HTML Canvas (no image files)
+- **XP & evolution system** — earn XP by finishing work sessions; your pet visibly grows
+- **Full Pomodoro cycle** — 4 work sessions → short break → long break, with cycle progress dots
+- **Drift-free timer** — uses a Web Worker with `Date.now()` correction so the timer never drifts in background tabs
+- **Custom work duration** — set sessions from 1 to 90 minutes
+- **Sound + desktop notifications** when a session ends
+- **Retro pixel aesthetic** — Press Start 2P font, NES-style XP bar, CRT scanline overlay, neon timer glow
+- **Dark / light mode** — toggle anytime, persisted across sessions
+- **Full localStorage persistence** — pet, XP, theme, work duration, and cycle count all survive page refresh
+- **Mobile-friendly** — responsive layout down to 320 px
 
 ---
 
-## 🐾 Pets
+## 🛠️ Tech stack
 
-| Pet | Baby | Mid | Final |
-|---|---|---|---|
-| Cat | 🐱 | 🐱 | 🐱 |
-| Dog | 🐶 | 🐶 | 🐶 |
-| Dragon | 🐲 | 🐲 | 🐲 |
-| Bunny | 🐰 | 🐰 | 🐰 |
-| Fox | 🦊 | 🦊 | 🦊 |
-| Axolotl | 🦎 | 🦎 | 🦎 |
-
-Each sprite is drawn procedurally on an HTML `<canvas>` element — no image files.
-
----
-
-## 🛠️ Built With
-
-- ⚛️ React 19 (Create React App)
-- 🎨 CSS custom properties for theming
-- 🖼️ HTML Canvas API for pixel art sprites
-- ⏱️ Web Worker for drift-free timer
-- 💾 localStorage for persistence
-- 📦 GitHub Pages (`gh-pages`) for deployment
+| Layer | Tech |
+|---|---|
+| Framework | React 19 (Create React App) |
+| Styling | CSS custom properties (dark/light theming) |
+| Pixel art | HTML Canvas API — procedural sprites, no images |
+| Timer | Web Worker + `Date.now()` drift correction |
+| Persistence | `localStorage` |
+| Deployment | GitHub Pages via `gh-pages` |
+| Font | Press Start 2P (Google Fonts) |
 
 ---
 
-## 🧠 The Psychology Behind It
-
-As a psychology student, I built this app incorporating:
-- **Pomodoro Technique** for sustained focus and managing cognitive load
-- **Progression systems** (XP + pet evolution) to build long-term consistency
-- **Visual feedback** (glowing timer, cycle dots, pet animation) for immediate motivation
-- **Autonomy** via customisable session length
-
----
-
-## 🗂️ Project Structure
+## 🗂️ Project structure
 
 ```
 src/
-  App.js          — main component, timer logic, localStorage persistence
+  App.js          — timer logic, XP system, localStorage, session flow
   App.css         — retro theme, dark/light mode, all UI styles
-  PetDisplay.js   — XP bar + animated pet canvas
-  PetPicker.js    — pet selection modal grid
-  PixelPet.js     — canvas-based pixel art renderer for all 6 pets × 3 stages
+  PetDisplay.js   — animated pet canvas + XP bar
+  PetPicker.js    — companion selection modal
+  PixelPet.js     — canvas pixel art renderer (6 pets × 3 stages)
   pets.js         — pet definitions, XP thresholds, stage logic
 public/
   timer-worker.js — drift-correcting Web Worker
@@ -77,14 +68,16 @@ public/
 
 ---
 
-## 🚀 Run Locally
+## 💻 Run locally
 
 ```bash
+git clone https://github.com/MariaGirones/pomodoro-gamefied.git
+cd pomodoro-gamefied
 npm install
 npm start
 ```
 
-Then open [http://localhost:3000/pomodoro-gamefied](http://localhost:3000/pomodoro-gamefied).
+Opens at [http://localhost:3000/pomodoro-gamefied](http://localhost:3000/pomodoro-gamefied).
 
 ## Deploy
 
