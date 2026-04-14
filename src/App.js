@@ -89,7 +89,8 @@ function App() {
 
   // UI state
   const isFirstVisitRef               = useRef(localStorage.getItem(LS_PET) === null);
-  const [showPicker, setShowPicker]   = useState(() => localStorage.getItem(LS_PET) === null);
+  const [showWelcome, setShowWelcome] = useState(() => localStorage.getItem(LS_PET) === null);
+  const [showPicker, setShowPicker]   = useState(false);
   const [pendingPetId, setPendingPetId] = useState(null);
   const [showXpWarning, setShowXpWarning] = useState(false);
   const [darkMode, setDarkMode]         = useState(loadDarkMode);
@@ -226,6 +227,11 @@ function App() {
     }
   };
 
+  const handleWelcomeContinue = () => {
+    setShowWelcome(false);
+    setShowPicker(true);
+  };
+
   const openPetPicker = () => {
     setPendingPetId(null);
     setShowPicker(true);
@@ -297,6 +303,24 @@ function App() {
 
   return (
     <>
+      {/* ── Welcome / instructions modal (first visit only) ── */}
+      {showWelcome && (
+        <div className="welcome-modal">
+          <div className="modal-content modal-narrow">
+            <h3>🍅 Welcome to PomoSprite!</h3>
+            <ul className="welcome-instructions">
+              <li>⏱ Work in focused sessions to earn XP</li>
+              <li>🐾 Your pet grows as you level up</li>
+              <li>☕ Short breaks after each session</li>
+              <li>🛋️ Long break after every 4 sessions</li>
+            </ul>
+            <button className="got-it-btn" onClick={handleWelcomeContinue}>
+              Pick your companion!
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ── Pet picker modal (onboarding + change) ── */}
       {showPicker && (
         <div className="welcome-modal">
