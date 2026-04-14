@@ -43,7 +43,7 @@ function loadXP() {
 }
 
 function loadPetId() {
-  return localStorage.getItem(LS_PET) ?? 'tomato';
+  return localStorage.getItem(LS_PET) ?? 'cat';
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -269,7 +269,7 @@ function App() {
         <h1>🍅 NeuroStudy Quest</h1>
 
         {/* Pet + XP */}
-        <PetDisplay petId={chosenPetId} xp={xp} gainCount={xpGainCount} />
+        <PetDisplay petId={chosenPetId} xp={xp} gainCount={xpGainCount} isRunning={isRunning} />
 
         <button
           className="change-pet-btn"

@@ -54,8 +54,8 @@ h1 {
 /* Pixel-art-style frame: hard drop shadow, no rounded corners */
 .pet-frame {
   position: relative;
-  width: 108px;
-  height: 108px;
+  width: 96px;
+  height: 96px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -63,27 +63,27 @@ h1 {
   background: var(--pet-bg, #fde8e8);
   border: 3px solid #222;
   box-shadow: 5px 5px 0 #222;
-  gap: 4px;
+  gap: 2px;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
-/* The emoji itself — large so it reads as a "sprite" */
-.pet-emoji {
-  font-size: 3.2rem;
-  line-height: 1;
+/* Canvas pixel-art sprite */
+.pixel-pet {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
   display: block;
 }
 
-/* Replay the bounce animation every time the element is re-mounted (key change) */
 @keyframes petBounce {
-  0%   { transform: translateY(0)   scale(1);    }
+  0%   { transform: translateY(0)    scale(1);    }
   25%  { transform: translateY(-14px) scale(1.2); }
   55%  { transform: translateY(-6px)  scale(1.05); }
   75%  { transform: translateY(-10px) scale(1.1); }
-  100% { transform: translateY(0)   scale(1);    }
+  100% { transform: translateY(0)    scale(1);    }
 }
 
-.pet-emoji.gained {
+.pixel-pet-bounce {
   animation: petBounce 0.65s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
 }
 
