@@ -53,6 +53,7 @@ body {
   background: var(--bg);
   color: var(--text);
   transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
 }
 
 /* ── App shell ────────────────────────────────────────────────────────────── */
@@ -99,7 +100,14 @@ body {
 
 @keyframes flash {
   0%, 100% { background: var(--bg); }
-  50%       { background: color-mix(in srgb, var(--accent, #ff2255) 18%, var(--bg)); }
+  50%       { background: #2a1a00; }
+}
+
+[data-theme="light"] .App.alerting { animation: flash-light 0.4s ease 3; }
+
+@keyframes flash-light {
+  0%, 100% { background: var(--bg); }
+  50%       { background: #fff3cd; }
 }
 
 /* ── Top bar ──────────────────────────────────────────────────────────────── */
@@ -699,8 +707,11 @@ h1 {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @media (max-width: 400px) {
-  .timer-display { font-size: clamp(2.5rem, 18vw, 4rem); }
-  .pet-picker    { grid-template-columns: repeat(2, 1fr); }
-  .controls      { gap: 0.35rem; }
-  .btn           { padding: 0.55rem 0.75rem; font-size: 0.42rem; }
+  .timer-display  { font-size: clamp(2.5rem, 18vw, 4rem); }
+  .pet-picker     { grid-template-columns: repeat(2, 1fr); }
+  .controls       { gap: 0.35rem; }
+  .btn            { padding: 0.55rem 0.75rem; font-size: 0.42rem; }
+  .modal-content  { padding: 1rem 0.75rem; }
+  .top-bar        { margin-bottom: 0.75rem; }
+  h1              { font-size: 0.4rem; }
 }

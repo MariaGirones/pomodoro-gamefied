@@ -355,7 +355,7 @@ function App() {
               onClick={() => setDarkMode(d => !d)}
               aria-label="Toggle light/dark mode"
             >
-              {darkMode ? '☀' : '🌙'}
+              {darkMode ? '☀️' : '🌙'}
             </button>
           </div>
         </div>

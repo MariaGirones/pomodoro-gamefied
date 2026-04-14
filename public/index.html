@@ -12,6 +12,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <!-- Synchronous theme init: prevents dark/light flash on load -->
+    <script>
+      try {
+        var t = localStorage.getItem('nsq_dark');
+        document.documentElement.setAttribute(
+          'data-theme',
+          t === 'false' ? 'light' : 'dark'
+        );
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
