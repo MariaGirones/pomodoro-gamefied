@@ -34,9 +34,14 @@ function nextSession(mode, count) {
 }
 
 // ── localStorage helpers ──────────────────────────────────────────────────────
-const LS_XP   = 'nsq_xp';
-const LS_PET  = 'nsq_pet';
-const LS_DARK = 'nsq_dark';
+const LS_XP    = 'nsq_xp';
+const LS_PET   = 'nsq_pet';
+const LS_DARK  = 'nsq_dark';
+const LS_WORK  = 'nsq_work';
+const LS_COUNT = 'nsq_count';
+const LS_MODE  = 'nsq_mode';
+
+const VALID_MODES = new Set(['work', 'shortBreak', 'longBreak']);
 
 function loadXP() {
   const raw = parseInt(localStorage.getItem(LS_XP), 10);
@@ -51,16 +56,31 @@ function loadDarkMode() {
   return localStorage.getItem(LS_DARK) !== 'false'; // default: dark
 }
 
+function loadWorkMinutes() {
+  const raw = parseInt(localStorage.getItem(LS_WORK), 10);
+  return isNaN(raw) ? 25 : Math.min(90, Math.max(1, raw));
+}
+
+function loadPomodoroCount() {
+  const raw = parseInt(localStorage.getItem(LS_COUNT), 10);
+  return isNaN(raw) ? 1 : Math.min(CYCLE_LENGTH, Math.max(1, raw));
+}
+
+function loadMode() {
+  const raw = localStorage.getItem(LS_MODE);
+  return VALID_MODES.has(raw) ? raw : 'work';
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 function App() {
   // Timer state
-  const [workMinutes, setWorkMinutes]   = useState(25);
-  const [pomodoroCount, setPomodoroCount] = useState(1);
-  const [mode, setMode]                 = useState('work');
-  const [timeLeft, setTimeLeft]         = useState(25 * 60);
-  const [isRunning, setIsRunning]       = useState(false);
-  const [worker, setWorker]             = useState(null);
-  const [alerting, setAlerting]         = useState(false);
+  const [workMinutes, setWorkMinutes]     = useState(loadWorkMinutes);
+  const [pomodoroCount, setPomodoroCount] = useState(loadPomodoroCount);
+  const [mode, setMode]                   = useState(loadMode);
+  const [timeLeft, setTimeLeft]           = useState(() => getDuration(loadMode(), loadWorkMinutes() * 60));
+  const [isRunning, setIsRunning]         = useState(false);
+  const [worker, setWorker]               = useState(null);
+  const [alerting, setAlerting]           = useState(false);
 
   // Pet & XP state (persisted)
   const [xp, setXP]                     = useState(loadXP);
@@ -75,9 +95,9 @@ function App() {
   const [darkMode, setDarkMode]         = useState(loadDarkMode);
 
   // Refs — values readable inside async contexts without stale closures
-  const modeRef          = useRef('work');
-  const pomodoroCountRef = useRef(1);
-  const workSecsRef      = useRef(25 * 60);
+  const modeRef          = useRef(loadMode());
+  const pomodoroCountRef = useRef(loadPomodoroCount());
+  const workSecsRef      = useRef(loadWorkMinutes() * 60);
   const isRunningRef     = useRef(false);
   const workerRef        = useRef(null);
   const xpRef            = useRef(loadXP());
@@ -89,9 +109,12 @@ function App() {
   useEffect(() => { isRunningRef.current = isRunning; }, [isRunning]);
   useEffect(() => { xpRef.current = xp; }, [xp]);
 
-  // Persist XP and pet choice to localStorage
-  useEffect(() => { localStorage.setItem(LS_XP, xp); }, [xp]);
-  useEffect(() => { localStorage.setItem(LS_PET, chosenPetId); }, [chosenPetId]);
+  // Persist all user data to localStorage
+  useEffect(() => { localStorage.setItem(LS_XP,    xp);            }, [xp]);
+  useEffect(() => { localStorage.setItem(LS_PET,   chosenPetId);   }, [chosenPetId]);
+  useEffect(() => { localStorage.setItem(LS_WORK,  workMinutes);   }, [workMinutes]);
+  useEffect(() => { localStorage.setItem(LS_COUNT, pomodoroCount); }, [pomodoroCount]);
+  useEffect(() => { localStorage.setItem(LS_MODE,  mode);          }, [mode]);
 
   // Apply theme and persist
   useEffect(() => {
