@@ -4,12 +4,74 @@ import PetDisplay from './PetDisplay';
 import PetPicker from './PetPicker';
 import { MAX_XP } from './pets';
 
-// ── Audio singleton ───────────────────────────────────────────────────────────
+// ── Audio: end-of-session WAV ─────────────────────────────────────────────────
 let audio = null;
 function preloadAudio() {
   if (!audio) {
     audio = new Audio(process.env.PUBLIC_URL + '/endOfPomodoro.wav');
     audio.load();
+  }
+}
+
+// ── Audio: synthesized start chime (Web Audio API, no file needed) ────────────
+// Two ascending sine tones (E5 → A5) — clearly distinct from the end WAV.
+// Fires on the user's tap/click, so mobile autoplay restrictions do not apply.
+function playStartChime() {
+  try {
+    const AudioCtx = window.AudioContext || window['webkitAudioContext'];
+    const ctx = new AudioCtx();
+    const t   = ctx.currentTime;
+    [659.25, 880].forEach((freq, i) => {
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type          = 'sine';
+      osc.frequency.value = freq;
+      const onset = t + i * 0.16;
+      gain.gain.setValueAtTime(0, onset);
+      gain.gain.linearRampToValueAtTime(0.25, onset + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, onset + 0.38);
+      osc.start(onset);
+      osc.stop(onset + 0.38);
+    });
+    setTimeout(() => ctx.close(), 1200);
+  } catch (e) {}
+}
+
+// ── Notifications ─────────────────────────────────────────────────────────────
+// Register a minimal service worker so we can use
+// ServiceWorkerRegistration.showNotification(), which works more reliably on
+// Android Chrome when the page is in a background tab than new Notification().
+let swReg = null;
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register(process.env.PUBLIC_URL + '/sw.js')
+      .then(r  => { swReg = r; })
+      .catch(() => {});
+  });
+}
+
+// opts.persistent = true  → requireInteraction + longer vibrate (end-of-session)
+// opts.persistent = false → auto-dismiss, short vibrate (session-start confirm)
+function showNotification(title, body, { persistent = false } = {}) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  const options = {
+    body,
+    tag:      'ascendi-session',
+    renotify: true,
+    ...(persistent && { requireInteraction: true }),
+    vibrate:  persistent ? [200, 100, 200] : [100],
+  };
+  try {
+    if (swReg) {
+      swReg.showNotification(title, options);
+    } else {
+      new Notification(title, options);
+    }
+  } catch (_) {
+    try { new Notification(title, options); } catch (_2) {}
   }
 }
 
@@ -199,14 +261,15 @@ function App() {
     audio.currentTime = 0;
     audio.play().catch(() => {});
 
-    // Desktop notification
-    if ('Notification' in window && Notification.permission === 'granted') {
-      const labels = {
-        work:       'Work session done! Time for a break.',
-        shortBreak: '☕ Break over — back to work!',
-        longBreak:  '🛋️ Long break over — new cycle starts!',
+    // Notification — persistent so it stays visible in background tabs
+    {
+      const msgs = {
+        work:       { title: 'Work session complete!', body: 'Nice work! Press Start to begin your break.' },
+        shortBreak: { title: 'Break over.',            body: 'Ready to focus? Press Start for the next session.' },
+        longBreak:  { title: 'Long break over.',       body: 'New cycle ready. Press Start when you\'re set.' },
       };
-      new Notification(labels[modeRef.current] ?? "Time's up!");
+      const { title, body } = msgs[modeRef.current] ?? { title: "Time's up!", body: 'Press Start for the next session.' };
+      showNotification(title, body, { persistent: true });
     }
 
     // Award XP for completed work sessions
@@ -232,9 +295,21 @@ function App() {
   // ── Controls ──────────────────────────────────────────────────────────────
   const startTimer = () => {
     if (workerRef.current && !isRunningRef.current) {
+      // Detect a fresh session start (vs. resume from pause)
+      const fullDuration = getDuration(
+        modeRef.current, workSecsRef.current, shortSecsRef.current, longSecsRef.current
+      );
+      const isFreshStart = timeLeft === fullDuration;
+
       workerRef.current.postMessage('start');
       isRunningRef.current = true;
       setIsRunning(true);
+
+      // Play start chime + notify only when a work session begins fresh
+      if (modeRef.current === 'work' && isFreshStart) {
+        playStartChime();
+        showNotification('Work session started!', 'Stay focused — you\'ve got this! 🎯');
+      }
     }
   };
 
