@@ -1,4 +1,4 @@
-# 🍅 PomoSprite
+# Ascendi
 
 **A gamified Pomodoro timer where you earn XP from focus sessions to feed and evolve a pixel pet.**
 

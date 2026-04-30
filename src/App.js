@@ -127,7 +127,7 @@ function App() {
   useEffect(() => {
     const m = Math.floor(timeLeft / 60);
     const s = timeLeft % 60;
-    document.title = `🍅 PomoSprite ${m}:${s.toString().padStart(2, '0')}`;
+    document.title = `Ascendi ${m}:${s.toString().padStart(2, '0')}`;
   }, [timeLeft]);
 
   // Create the worker once
@@ -169,11 +169,11 @@ function App() {
     // Desktop notification
     if ('Notification' in window && Notification.permission === 'granted') {
       const labels = {
-        work:       '🍅 Work session done! Time for a break.',
+        work:       'Work session done! Time for a break.',
         shortBreak: '☕ Break over — back to work!',
         longBreak:  '🛋️ Long break over — new cycle starts!',
       };
-      new Notification(labels[modeRef.current] ?? "🍅 Time's up!");
+      new Notification(labels[modeRef.current] ?? "Time's up!");
     }
 
     // ── Award XP for completed work sessions ──────────────────────────────
@@ -285,7 +285,7 @@ function App() {
     /* shortBreak */       pomodoroCount;
 
   const modeLabel =
-    mode === 'work'       ? '🍅 Work Session' :
+    mode === 'work'       ? 'Work Session' :
     mode === 'shortBreak' ? '☕ Short Break'  :
                             '🛋️ Long Break';
 
@@ -307,7 +307,7 @@ function App() {
       {showWelcome && (
         <div className="welcome-modal">
           <div className="modal-content modal-narrow">
-            <h3>🍅 Welcome to PomoSprite!</h3>
+            <h3>Welcome to Ascendi!</h3>
             <ul className="welcome-instructions">
               <li>⏱ Work in focused sessions to earn XP</li>
               <li>🐾 Your pet grows as you level up</li>
@@ -327,7 +327,7 @@ function App() {
           <div className="modal-content modal-wide">
             {isFirstVisitRef.current ? (
               <>
-                <h3>🍅 Choose your companion</h3>
+                <h3>Choose your companion</h3>
                 <p className="modal-sub">
                   It grows as you earn XP from focus sessions.
                 </p>
@@ -387,7 +387,7 @@ function App() {
       {/* ── Main app ── */}
       <div className={`App mode-${mode}${alerting ? ' alerting' : ''}`}>
         <div className="top-bar">
-          <h1>🍅 PomoSprite</h1>
+          <h1>Ascendi</h1>
           <div className="top-bar-actions">
             <button
               className="settings-btn"
@@ -432,7 +432,7 @@ function App() {
                 i === pomodoroCount - 1 && mode === 'work' ? 'active' : '',
               ].filter(Boolean).join(' ')}
               aria-label={`Pomodoro ${i + 1}`}
-            >🍅</span>
+            >●</span>
           ))}
         </div>
 
