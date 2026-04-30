@@ -13,109 +13,142 @@ function preloadAudio() {
   }
 }
 
-// ── Timer constants ───────────────────────────────────────────────────────────
-const SHORT_BREAK_SECS = 5 * 60;
-const LONG_BREAK_SECS  = 15 * 60;
-const CYCLE_LENGTH     = 4;
-
-function getDuration(mode, workSecs) {
-  if (mode === 'work') return workSecs;
-  if (mode === 'shortBreak') return SHORT_BREAK_SECS;
-  return LONG_BREAK_SECS;
+// ── Pure timer helpers ────────────────────────────────────────────────────────
+function clamp(val, min, max) {
+  return Math.min(max, Math.max(min, isNaN(val) ? min : val));
 }
 
-function nextSession(mode, count) {
+function getDuration(mode, workSecs, shortSecs, longSecs) {
+  if (mode === 'work')       return workSecs;
+  if (mode === 'shortBreak') return shortSecs;
+  return longSecs;
+}
+
+function nextSession(mode, count, cycleLen) {
   if (mode === 'work') {
-    if (count >= CYCLE_LENGTH) return { nextMode: 'longBreak', nextCount: count };
+    if (count >= cycleLen) return { nextMode: 'longBreak', nextCount: count };
     return { nextMode: 'shortBreak', nextCount: count };
   }
   const nextCount = mode === 'longBreak' ? 1 : count + 1;
   return { nextMode: 'work', nextCount };
 }
 
-// ── localStorage helpers ──────────────────────────────────────────────────────
+// ── localStorage keys & loaders ───────────────────────────────────────────────
 const LS_XP    = 'nsq_xp';
 const LS_PET   = 'nsq_pet';
 const LS_DARK  = 'nsq_dark';
 const LS_WORK  = 'nsq_work';
+const LS_SHORT = 'nsq_short';
+const LS_LONG  = 'nsq_long';
+const LS_CYCLE = 'nsq_cycle';
 const LS_COUNT = 'nsq_count';
-const LS_MODE  = 'nsq_mode';
 
-const VALID_MODES = new Set(['work', 'shortBreak', 'longBreak']);
 
 function loadXP() {
   const raw = parseInt(localStorage.getItem(LS_XP), 10);
   return isNaN(raw) ? 0 : Math.min(MAX_XP, Math.max(0, raw));
 }
+function loadPetId() { return localStorage.getItem(LS_PET) ?? 'cat'; }
+function loadDarkMode() { return localStorage.getItem(LS_DARK) !== 'false'; }
 
-function loadPetId() {
-  return localStorage.getItem(LS_PET) ?? 'cat';
-}
+const WORK_OPTIONS       = [5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90];
+const SHORT_BREAK_OPTIONS = [5,10,15,20,25,30];
+const LONG_BREAK_OPTIONS  = [10,15,20,25,30];
 
-function loadDarkMode() {
-  return localStorage.getItem(LS_DARK) !== 'false'; // default: dark
+function snapToOptions(raw, options, defaultVal) {
+  if (isNaN(raw)) return defaultVal;
+  return options.includes(raw) ? raw : options.reduce((best, o) =>
+    Math.abs(o - raw) < Math.abs(best - raw) ? o : best
+  );
 }
 
 function loadWorkMinutes() {
   const raw = parseInt(localStorage.getItem(LS_WORK), 10);
-  return isNaN(raw) ? 25 : Math.min(90, Math.max(1, raw));
+  return snapToOptions(raw, WORK_OPTIONS, 25);
 }
-
+function loadShortBreakMinutes() {
+  const raw = parseInt(localStorage.getItem(LS_SHORT), 10);
+  return snapToOptions(raw, SHORT_BREAK_OPTIONS, 5);
+}
+function loadLongBreakMinutes() {
+  const raw = parseInt(localStorage.getItem(LS_LONG), 10);
+  return snapToOptions(raw, LONG_BREAK_OPTIONS, 15);
+}
+function loadCycleLength() {
+  const raw = parseInt(localStorage.getItem(LS_CYCLE), 10);
+  return isNaN(raw) ? 4 : clamp(raw, 1, 8);
+}
 function loadPomodoroCount() {
+  const cycleLen = loadCycleLength();
   const raw = parseInt(localStorage.getItem(LS_COUNT), 10);
-  return isNaN(raw) ? 1 : Math.min(CYCLE_LENGTH, Math.max(1, raw));
-}
-
-function loadMode() {
-  const raw = localStorage.getItem(LS_MODE);
-  return VALID_MODES.has(raw) ? raw : 'work';
+  return isNaN(raw) ? 1 : clamp(raw, 1, cycleLen);
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 function App() {
-  // Timer state
-  const [workMinutes, setWorkMinutes]     = useState(loadWorkMinutes);
-  const [pomodoroCount, setPomodoroCount] = useState(loadPomodoroCount);
-  const [mode, setMode]                   = useState(loadMode);
-  const [timeLeft, setTimeLeft]           = useState(() => getDuration(loadMode(), loadWorkMinutes() * 60));
-  const [isRunning, setIsRunning]         = useState(false);
-  const [worker, setWorker]               = useState(null);
-  const [alerting, setAlerting]           = useState(false);
+  // Timer settings (all persisted)
+  const [workMinutes,       setWorkMinutes]       = useState(loadWorkMinutes);
+  const [shortBreakMinutes, setShortBreakMinutes] = useState(loadShortBreakMinutes);
+  const [longBreakMinutes,  setLongBreakMinutes]  = useState(loadLongBreakMinutes);
+  const [cycleLength,       setCycleLength]       = useState(loadCycleLength);
 
-  // Pet & XP state (persisted)
-  const [xp, setXP]                     = useState(loadXP);
-  const [chosenPetId, setChosenPetId]   = useState(loadPetId);
-  const [xpGainCount, setXpGainCount]   = useState(0); // drives bounce animation
+  // Timer state
+  const [pomodoroCount, setPomodoroCount] = useState(loadPomodoroCount);
+  const [mode, setMode]                   = useState('work');
+  const [timeLeft, setTimeLeft]           = useState(() =>
+    getDuration(
+      'work',
+      loadWorkMinutes() * 60,
+      loadShortBreakMinutes() * 60,
+      loadLongBreakMinutes() * 60,
+    )
+  );
+  const [isRunning, setIsRunning] = useState(false);
+  const [worker, setWorker]       = useState(null);
+  const [alerting, setAlerting]   = useState(false);
+
+  // Pet & XP state
+  const [xp, setXP]                   = useState(loadXP);
+  const [chosenPetId, setChosenPetId] = useState(loadPetId);
+  const [xpGainCount, setXpGainCount] = useState(0);
 
   // UI state
   const isFirstVisitRef               = useRef(localStorage.getItem(LS_PET) === null);
-  const [showWelcome, setShowWelcome] = useState(() => localStorage.getItem(LS_PET) === null);
-  const [showPicker, setShowPicker]   = useState(false);
-  const [pendingPetId, setPendingPetId] = useState(null);
+  const [showWelcome, setShowWelcome]     = useState(() => localStorage.getItem(LS_PET) === null);
+  const [showPicker, setShowPicker]       = useState(false);
+  const [pendingPetId, setPendingPetId]   = useState(null);
   const [showXpWarning, setShowXpWarning] = useState(false);
-  const [darkMode, setDarkMode]         = useState(loadDarkMode);
+  const [darkMode, setDarkMode]           = useState(loadDarkMode);
 
-  // Refs — values readable inside async contexts without stale closures
-  const modeRef          = useRef(loadMode());
+  // Refs — stable values readable inside async / stale-closure contexts
+  const modeRef          = useRef('work');
   const pomodoroCountRef = useRef(loadPomodoroCount());
   const workSecsRef      = useRef(loadWorkMinutes() * 60);
+  const shortSecsRef     = useRef(loadShortBreakMinutes() * 60);
+  const longSecsRef      = useRef(loadLongBreakMinutes() * 60);
+  const cycleLengthRef   = useRef(loadCycleLength());
   const isRunningRef     = useRef(false);
   const workerRef        = useRef(null);
   const xpRef            = useRef(loadXP());
 
-  // Keep refs in sync
-  useEffect(() => { modeRef.current = mode; }, [mode]);
-  useEffect(() => { pomodoroCountRef.current = pomodoroCount; }, [pomodoroCount]);
-  useEffect(() => { workSecsRef.current = workMinutes * 60; }, [workMinutes]);
-  useEffect(() => { isRunningRef.current = isRunning; }, [isRunning]);
-  useEffect(() => { xpRef.current = xp; }, [xp]);
+  // Keep refs in sync with state
+  useEffect(() => { modeRef.current          = mode;                  }, [mode]);
+  useEffect(() => { pomodoroCountRef.current = pomodoroCount;         }, [pomodoroCount]);
+  useEffect(() => { workSecsRef.current      = workMinutes * 60;      }, [workMinutes]);
+  useEffect(() => { shortSecsRef.current     = shortBreakMinutes * 60;}, [shortBreakMinutes]);
+  useEffect(() => { longSecsRef.current      = longBreakMinutes * 60; }, [longBreakMinutes]);
+  useEffect(() => { cycleLengthRef.current   = cycleLength;           }, [cycleLength]);
+  useEffect(() => { isRunningRef.current     = isRunning;             }, [isRunning]);
+  useEffect(() => { xpRef.current            = xp;                    }, [xp]);
 
-  // Persist all user data to localStorage
-  useEffect(() => { localStorage.setItem(LS_XP,    xp);            }, [xp]);
-  useEffect(() => { localStorage.setItem(LS_PET,   chosenPetId);   }, [chosenPetId]);
-  useEffect(() => { localStorage.setItem(LS_WORK,  workMinutes);   }, [workMinutes]);
-  useEffect(() => { localStorage.setItem(LS_COUNT, pomodoroCount); }, [pomodoroCount]);
-  useEffect(() => { localStorage.setItem(LS_MODE,  mode);          }, [mode]);
+  // Persist all settings & session state to localStorage
+  useEffect(() => { localStorage.setItem(LS_XP,    xp);               }, [xp]);
+  useEffect(() => { localStorage.setItem(LS_PET,   chosenPetId);      }, [chosenPetId]);
+  useEffect(() => { localStorage.setItem(LS_WORK,  workMinutes);      }, [workMinutes]);
+  useEffect(() => { localStorage.setItem(LS_SHORT, shortBreakMinutes);}, [shortBreakMinutes]);
+  useEffect(() => { localStorage.setItem(LS_LONG,  longBreakMinutes); }, [longBreakMinutes]);
+  useEffect(() => { localStorage.setItem(LS_CYCLE, cycleLength);      }, [cycleLength]);
+  useEffect(() => { localStorage.setItem(LS_COUNT, pomodoroCount);    }, [pomodoroCount]);
 
   // Apply theme and persist
   useEffect(() => {
@@ -143,13 +176,13 @@ function App() {
     if (!worker) return;
     worker.onmessage = (event) => {
       if (event.data !== 'tick') return;
+      if (!isRunningRef.current) return; // discard stale ticks after stop
       setTimeLeft(prev => Math.max(0, prev - 1));
     };
   }, [worker]);
 
   // ── Session-end effect ────────────────────────────────────────────────────
-  // Fires when timeLeft reaches 0 while the timer is running.
-  // All side-effects live here — not inside the setState updater.
+  // Fires whenever timeLeft reaches 0 while the timer is running.
   useEffect(() => {
     if (timeLeft !== 0 || !isRunningRef.current) return;
 
@@ -176,26 +209,27 @@ function App() {
       new Notification(labels[modeRef.current] ?? "Time's up!");
     }
 
-    // ── Award XP for completed work sessions ──────────────────────────────
+    // Award XP for completed work sessions
     if (modeRef.current === 'work') {
       const earned = Math.floor(workSecsRef.current / 60); // 1 XP per full minute
       const newXP  = Math.min(MAX_XP, xpRef.current + earned);
       xpRef.current = newXP;
       setXP(newXP);
-      setXpGainCount(c => c + 1); // triggers pet bounce animation
+      setXpGainCount(c => c + 1);
     }
 
-    // ── Advance session ───────────────────────────────────────────────────
-    const { nextMode, nextCount } = nextSession(modeRef.current, pomodoroCountRef.current);
+    // Advance to the next session
+    const { nextMode, nextCount } = nextSession(
+      modeRef.current, pomodoroCountRef.current, cycleLengthRef.current
+    );
     modeRef.current          = nextMode;
     pomodoroCountRef.current = nextCount;
     setMode(nextMode);
     setPomodoroCount(nextCount);
-    setTimeLeft(getDuration(nextMode, workSecsRef.current));
+    setTimeLeft(getDuration(nextMode, workSecsRef.current, shortSecsRef.current, longSecsRef.current));
   }, [timeLeft]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Controls ──────────────────────────────────────────────────────────────
-
   const startTimer = () => {
     if (workerRef.current && !isRunningRef.current) {
       workerRef.current.postMessage('start');
@@ -218,7 +252,9 @@ function App() {
       isRunningRef.current = false;
       setIsRunning(false);
     }
-    setTimeLeft(getDuration(modeRef.current, workSecsRef.current));
+    setTimeLeft(getDuration(
+      modeRef.current, workSecsRef.current, shortSecsRef.current, longSecsRef.current
+    ));
   };
 
   const requestNotificationPermission = () => {
@@ -227,6 +263,46 @@ function App() {
     }
   };
 
+  // ── Settings change handlers ───────────────────────────────────────────────
+  const handleWorkMinutesChange = (e) => {
+    const val = parseInt(e.target.value, 10);
+    setWorkMinutes(val);
+    workSecsRef.current = val * 60;
+    if (!isRunningRef.current && modeRef.current === 'work') {
+      setTimeLeft(val * 60);
+    }
+  };
+
+  const handleShortBreakChange = (e) => {
+    const val = parseInt(e.target.value, 10);
+    setShortBreakMinutes(val);
+    shortSecsRef.current = val * 60;
+    if (!isRunningRef.current && modeRef.current === 'shortBreak') {
+      setTimeLeft(val * 60);
+    }
+  };
+
+  const handleLongBreakChange = (e) => {
+    const val = parseInt(e.target.value, 10);
+    setLongBreakMinutes(val);
+    longSecsRef.current = val * 60;
+    if (!isRunningRef.current && modeRef.current === 'longBreak') {
+      setTimeLeft(val * 60);
+    }
+  };
+
+  const handleCycleLengthChange = (e) => {
+    const val = clamp(parseInt(e.target.value, 10), 1, 8);
+    setCycleLength(val);
+    cycleLengthRef.current = val;
+    // Clamp the in-progress session count to the new cycle length
+    if (pomodoroCountRef.current > val) {
+      pomodoroCountRef.current = val;
+      setPomodoroCount(val);
+    }
+  };
+
+  // ── Pet picker handlers ────────────────────────────────────────────────────
   const handleWelcomeContinue = () => {
     setShowWelcome(false);
     setShowPicker(true);
@@ -246,7 +322,6 @@ function App() {
       setShowPicker(false);
       setPendingPetId(null);
     } else {
-      // Switching to a different pet — warn about XP reset
       setShowXpWarning(true);
     }
   };
@@ -267,40 +342,28 @@ function App() {
     setPendingPetId(null);
   };
 
-  const handleWorkMinutesChange = (e) => {
-    const raw = parseInt(e.target.value, 10);
-    const val = Math.min(90, Math.max(1, isNaN(raw) ? 1 : raw));
-    setWorkMinutes(val);
-    workSecsRef.current = val * 60;
-    if (!isRunningRef.current && modeRef.current === 'work') {
-      setTimeLeft(val * 60);
-    }
-  };
-
   // ── Derived display values ────────────────────────────────────────────────
-
   const completedInCycle =
     mode === 'work'      ? pomodoroCount - 1 :
-    mode === 'longBreak' ? CYCLE_LENGTH :
+    mode === 'longBreak' ? cycleLength :
     /* shortBreak */       pomodoroCount;
 
   const modeLabel =
-    mode === 'work'       ? 'Work Session' :
-    mode === 'shortBreak' ? '☕ Short Break'  :
+    mode === 'work'       ? 'Work Session'  :
+    mode === 'shortBreak' ? '☕ Short Break' :
                             '🛋️ Long Break';
 
   const subLabel =
     mode === 'work'
-      ? `Pomodoro ${pomodoroCount} / ${CYCLE_LENGTH}`
+      ? `Session ${pomodoroCount} / ${cycleLength}`
       : mode === 'shortBreak'
-      ? `After pomodoro ${pomodoroCount} / ${CYCLE_LENGTH}`
+      ? `After session ${pomodoroCount} / ${cycleLength}`
       : 'Cycle complete — enjoy the rest!';
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
 
   // ── Render ────────────────────────────────────────────────────────────────
-
   return (
     <>
       {/* ── Welcome / instructions modal (first visit only) ── */}
@@ -312,7 +375,7 @@ function App() {
               <li>⏱ Work in focused sessions to earn XP</li>
               <li>🐾 Your pet grows as you level up</li>
               <li>☕ Short breaks after each session</li>
-              <li>🛋️ Long break after every 4 sessions</li>
+              <li>🛋️ Long break after every {cycleLength} sessions</li>
             </ul>
             <button className="got-it-btn" onClick={handleWelcomeContinue}>
               Pick your companion!
@@ -422,8 +485,8 @@ function App() {
           {minutes}:{seconds.toString().padStart(2, '0')}
         </div>
 
-        <div className="cycle-dots" aria-label="Pomodoro cycle progress">
-          {Array.from({ length: CYCLE_LENGTH }, (_, i) => (
+        <div className="cycle-dots" aria-label="Session cycle progress">
+          {Array.from({ length: cycleLength }, (_, i) => (
             <span
               key={i}
               className={[
@@ -431,7 +494,7 @@ function App() {
                 i < completedInCycle                       ? 'done'   : '',
                 i === pomodoroCount - 1 && mode === 'work' ? 'active' : '',
               ].filter(Boolean).join(' ')}
-              aria-label={`Pomodoro ${i + 1}`}
+              aria-label={`Session ${i + 1}`}
             >●</span>
           ))}
         </div>
@@ -449,17 +512,56 @@ function App() {
         </div>
 
         <div className="settings">
-          <label htmlFor="work-duration">Work duration:</label>
-          <input
+          <label htmlFor="work-duration">Work</label>
+          <select
             id="work-duration"
-            type="number"
-            min="1"
-            max="90"
             value={workMinutes}
             onChange={handleWorkMinutesChange}
             disabled={isRunning && mode === 'work'}
-          />
+          >
+            {[5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90].map(m => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
           <span>min</span>
+
+          <label htmlFor="short-break">Short break</label>
+          <select
+            id="short-break"
+            value={shortBreakMinutes}
+            onChange={handleShortBreakChange}
+            disabled={isRunning && mode === 'shortBreak'}
+          >
+            {[5,10,15,20,25,30].map(m => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
+          <span>min</span>
+
+          <label htmlFor="long-break">Long break</label>
+          <select
+            id="long-break"
+            value={longBreakMinutes}
+            onChange={handleLongBreakChange}
+            disabled={isRunning && mode === 'longBreak'}
+          >
+            {[10,15,20,25,30].map(m => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
+          <span>min</span>
+
+          <label htmlFor="cycle-length">Sessions / cycle</label>
+          <input
+            id="cycle-length"
+            type="number"
+            min="1"
+            max="8"
+            value={cycleLength}
+            onChange={handleCycleLengthChange}
+            disabled={isRunning}
+          />
+          <span></span>
         </div>
       </div>
     </>

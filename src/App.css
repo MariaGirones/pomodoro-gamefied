@@ -492,20 +492,22 @@ h1 {
 /* ── Settings ─────────────────────────────────────────────────────────────── */
 
 .settings {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
   align-items: center;
-  gap: 0.5rem;
+  column-gap: 0.5rem;
+  row-gap: 0.45rem;
   font-size: 0.38rem;
   color: var(--text-dim);
-  flex-wrap: wrap;
-  justify-content: center;
+  width: 100%;
+  max-width: 260px;
+  margin: 0 auto;
 }
 
 .settings label { letter-spacing: 0.04em; }
 
-.settings input[type='number'] {
-  width: 50px;
-  padding: 0.3rem;
+.settings select {
+  padding: 0.3rem 0.25rem;
   border: 2px solid var(--border);
   background: var(--bg-card);
   color: var(--text);
@@ -514,12 +516,13 @@ h1 {
   text-align: center;
   box-shadow: 2px 2px 0 var(--shadow);
   outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
 }
 
-.settings input[type='number']:focus { border-color: var(--accent, #ff2255); }
-.settings input[type='number']:disabled { opacity: 0.35; cursor: not-allowed; }
-.settings input[type='number']::-webkit-inner-spin-button,
-.settings input[type='number']::-webkit-outer-spin-button { opacity: 0.4; }
+.settings select:focus  { border-color: var(--accent, #ff2255); }
+.settings select:disabled { opacity: 0.35; cursor: not-allowed; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    MODALS
@@ -773,9 +776,9 @@ h1 {
   .modal-content      { padding: 1rem 0.85rem; }
   .modal-wide         { max-width: 100%; }
 
-  /* Settings row — stack vertically if tight */
-  .settings           { gap: 0.4rem; font-size: 0.36rem; }
-  .settings input[type='number'] { width: 44px; font-size: 0.44rem; }
+  /* Settings grid — tighten on small screens */
+  .settings           { column-gap: 0.35rem; row-gap: 0.4rem; font-size: 0.36rem; max-width: 220px; }
+  .settings select { font-size: 0.44rem; }
 
   /* Welcome list */
   .welcome-instructions li { font-size: 0.36rem; }
