@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/pomodoro-gamefied/static/css/main.bfb18220.css",
-    "main.js": "/pomodoro-gamefied/static/js/main.241bddec.js",
-    "static/js/453.9d73228d.chunk.js": "/pomodoro-gamefied/static/js/453.9d73228d.chunk.js",
-    "index.html": "/pomodoro-gamefied/index.html",
-    "main.bfb18220.css.map": "/pomodoro-gamefied/static/css/main.bfb18220.css.map",
-    "main.241bddec.js.map": "/pomodoro-gamefied/static/js/main.241bddec.js.map",
-    "453.9d73228d.chunk.js.map": "/pomodoro-gamefied/static/js/453.9d73228d.chunk.js.map"
+    "main.css": "/ascendi/static/css/main.b903f69e.css",
+    "main.js": "/ascendi/static/js/main.630306a7.js",
+    "static/js/453.9d73228d.chunk.js": "/ascendi/static/js/453.9d73228d.chunk.js",
+    "index.html": "/ascendi/index.html",
+    "main.b903f69e.css.map": "/ascendi/static/css/main.b903f69e.css.map",
+    "main.630306a7.js.map": "/ascendi/static/js/main.630306a7.js.map",
+    "453.9d73228d.chunk.js.map": "/ascendi/static/js/453.9d73228d.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.bfb18220.css",
-    "static/js/main.241bddec.js"
+    "static/css/main.b903f69e.css",
+    "static/js/main.630306a7.js"
   ]
 }
