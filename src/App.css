@@ -6,7 +6,7 @@
   --bg-panel:    #181628;
   --bg-card:     #131122;
   --text:        #cac4e0;
-  --text-dim:    #5a5480;
+  --text-dim:    #8884b8;
   --text-muted:  #2c2a48;
   --border:      #232140;
   --border-hi:   #3d3965;
@@ -43,9 +43,15 @@
 
 /* ── Mode accent colours ──────────────────────────────────────────────────── */
 
-.App.mode-work       { --accent: #c0566a; --accent-dark: #9e3d53; }
+/* Dark theme accents — bright enough for 4.5:1 on #0e0d1c */
+.App.mode-work       { --accent: #d06878; --accent-dark: #b05468; }
 .App.mode-shortBreak { --accent: #3aaa8e; --accent-dark: #2d886f; }
 .App.mode-longBreak  { --accent: #5888c8; --accent-dark: #3e6aa8; }
+
+/* Light theme accents — dark enough for 4.5:1 on #f4eeea */
+[data-theme="light"] .App.mode-work       { --accent: #8c3548; --accent-dark: #78293c; }
+[data-theme="light"] .App.mode-shortBreak { --accent: #1f7a64; --accent-dark: #1a6554; }
+[data-theme="light"] .App.mode-longBreak  { --accent: #2e5fa8; --accent-dark: #264e8c; }
 
 /* ── Base ─────────────────────────────────────────────────────────────────── */
 
@@ -100,14 +106,14 @@ body {
 
 @keyframes session-end-pulse {
   0%, 100% { background: var(--bg); }
-  45%       { background: color-mix(in srgb, var(--accent, #c0566a) 12%, var(--bg)); }
+  45%       { background: color-mix(in srgb, var(--accent, #d06878) 12%, var(--bg)); }
 }
 
 [data-theme="light"] .App.alerting { animation: session-end-pulse-light 1.4s ease 2; }
 
 @keyframes session-end-pulse-light {
   0%, 100% { background: var(--bg); }
-  45%       { background: color-mix(in srgb, var(--accent, #c0566a) 14%, var(--bg)); }
+  45%       { background: color-mix(in srgb, var(--accent, #d06878) 14%, var(--bg)); }
 }
 
 /* ── Top bar ──────────────────────────────────────────────────────────────── */
@@ -122,8 +128,8 @@ body {
 }
 
 h1 {
-  font-size: 0.55rem;
-  color: var(--accent, #c0566a);
+  font-size: 0.8rem;
+  color: var(--accent, #d06878);
   letter-spacing: 0.06em;
   text-shadow: 2px 2px 0 var(--shadow);
   text-transform: uppercase;
@@ -163,8 +169,8 @@ h1 {
   border: 2px solid var(--border);
   color: var(--text-dim);
   font-family: 'Press Start 2P', monospace;
-  font-size: 0.52rem;
-  padding: 0.35rem 0.5rem;
+  font-size: 0.75rem;
+  padding: 0.4rem 0.6rem;
   cursor: pointer;
   box-shadow: 2px 2px 0 var(--shadow);
   transition: background 0.15s, color 0.15s, transform 0.1s, box-shadow 0.1s;
@@ -205,7 +211,7 @@ h1 {
   align-items: center;
   justify-content: center;
   background: var(--pet-bg, #181628);
-  border: 3px solid var(--pet-color, #c0566a);
+  border: 3px solid var(--pet-color, #d06878);
   box-shadow:
     5px 5px 0 var(--shadow),
     inset 0 0 16px rgba(0, 0, 0, 0.6);
@@ -225,8 +231,8 @@ h1 {
   bottom: 2px;
   right: 2px;
   font-family: 'Press Start 2P', monospace;
-  font-size: 0.42rem;
-  color: var(--pet-color, #c0566a);
+  font-size: 0.65rem;
+  color: var(--pet-color, #d06878);
   background: rgba(0, 0, 0, 0.75);
   padding: 1px 3px;
   letter-spacing: 0.04em;
@@ -237,7 +243,7 @@ h1 {
 [data-theme="light"] .pet-stage-badge { background: rgba(255, 255, 255, 0.85); }
 
 .pet-name {
-  font-size: 0.65rem;
+  font-size: 1rem;
   color: var(--text);
   text-shadow: 1px 1px 0 var(--shadow);
   letter-spacing: 0.06em;
@@ -277,7 +283,7 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  font-size: 0.5rem;
+  font-size: 0.75rem;
 }
 
 .xp-count  { color: var(--xp-fill); }
@@ -335,8 +341,8 @@ h1 {
 /* Stage labels */
 .xp-stage-labels {
   position: relative;
-  height: 12px;
-  font-size: 0.42rem;
+  height: 14px;
+  font-size: 0.6rem;
   color: var(--text-muted);
   letter-spacing: 0.04em;
 }
@@ -371,14 +377,14 @@ h1 {
 }
 
 .mode-label {
-  font-size: 0.65rem;
-  color: var(--accent, #c0566a);
+  font-size: 1rem;
+  color: var(--accent, #d06878);
   text-shadow: 2px 2px 0 var(--shadow);
   letter-spacing: 0.05em;
 }
 
 .sub-label {
-  font-size: 0.48rem;
+  font-size: 0.85rem;
   color: var(--text-dim);
   letter-spacing: 0.03em;
 }
@@ -386,21 +392,21 @@ h1 {
 /* Timer digits — soft ambient glow */
 .timer-display {
   font-size: clamp(3rem, 14vw, 5.5rem);
-  color: var(--accent, #c0566a);
+  color: var(--accent, #d06878);
   line-height: 1;
   margin: 0.5rem 0 0.75rem;
   letter-spacing: 0.05em;
   font-variant-numeric: tabular-nums;
   text-shadow:
-    0 0 22px color-mix(in srgb, var(--accent, #c0566a) 42%, transparent),
-    0 0 50px color-mix(in srgb, var(--accent, #c0566a) 18%, transparent),
+    0 0 22px color-mix(in srgb, var(--accent, #d06878) 42%, transparent),
+    0 0 50px color-mix(in srgb, var(--accent, #d06878) 18%, transparent),
     3px 3px 0 var(--shadow);
   transition: color 0.5s ease, text-shadow 0.5s ease;
 }
 
 [data-theme="light"] .timer-display {
   text-shadow:
-    0 0 14px color-mix(in srgb, var(--accent, #c0566a) 28%, transparent),
+    0 0 14px color-mix(in srgb, var(--accent, #d06878) 28%, transparent),
     2px 2px 0 var(--shadow);
 }
 
@@ -449,13 +455,13 @@ h1 {
 }
 
 .btn {
-  padding: 0.65rem 1.1rem;
+  padding: 0.7rem 1.2rem;
   border: 2px solid transparent;
   font-family: 'Press Start 2P', monospace;
-  font-size: 0.58rem;
+  font-size: 1rem;
   cursor: pointer;
-  background: var(--accent, #c0566a);
-  color: #fff;
+  background: var(--accent, #d06878);
+  color: #0e0d1c;
   box-shadow: 3px 3px 0 var(--shadow);
   transition: transform 0.08s, box-shadow 0.08s, background 0.15s;
   letter-spacing: 0.04em;
@@ -463,8 +469,10 @@ h1 {
   white-space: nowrap;
 }
 
+[data-theme="light"] .btn { color: #fff; }
+
 .btn:hover:not(:disabled) {
-  background: var(--accent-dark, #9e3d53);
+  background: var(--accent-dark, #b05468);
   transform: translate(1px, 1px);
   box-shadow: 2px 2px 0 var(--shadow);
 }
@@ -495,34 +503,51 @@ h1 {
   display: grid;
   grid-template-columns: 1fr auto auto;
   align-items: center;
-  column-gap: 0.5rem;
-  row-gap: 0.5rem;
-  font-size: 0.45rem;
+  column-gap: 0.6rem;
+  row-gap: 0.6rem;
+  font-size: 0.75rem;
   color: var(--text-dim);
   width: 100%;
-  max-width: 260px;
+  max-width: 320px;
   margin: 0 auto;
 }
 
 .settings label { letter-spacing: 0.04em; }
 
-.settings select {
-  padding: 0.35rem 0.3rem;
+.settings select,
+.settings input[type="number"] {
+  padding: 0.4rem 0.35rem;
   border: 2px solid var(--border);
   background: var(--bg-card);
   color: var(--text);
   font-family: 'Press Start 2P', monospace;
-  font-size: 0.55rem;
+  font-size: 0.85rem;
   text-align: center;
   box-shadow: 2px 2px 0 var(--shadow);
   outline: none;
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
+  -moz-appearance: textfield;
 }
 
-.settings select:focus  { border-color: var(--accent, #c0566a); }
-.settings select:disabled { opacity: 0.35; cursor: not-allowed; }
+.settings input[type="number"] { width: 3.5em; cursor: text; }
+
+.settings input[type="number"]::-webkit-outer-spin-button,
+.settings input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.settings select:focus-visible,
+.settings input[type="number"]:focus-visible {
+  border-color: var(--accent, #d06878);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, #d06878) 30%, transparent), 2px 2px 0 var(--shadow);
+  outline: none;
+}
+
+.settings select:disabled,
+.settings input[type="number"]:disabled { opacity: 0.35; cursor: not-allowed; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    MODALS
@@ -545,7 +570,7 @@ h1 {
 
 .modal-content {
   background: var(--bg-panel);
-  border: 3px solid var(--accent, #c0566a);
+  border: 3px solid var(--accent, #d06878);
   box-shadow: 6px 6px 0 var(--shadow);
   padding: 1.5rem 1.25rem;
   width: 100%;
@@ -561,8 +586,8 @@ h1 {
 .modal-narrow { max-width: 320px; }
 
 .modal-content h3 {
-  font-size: 0.7rem;
-  color: var(--accent, #c0566a);
+  font-size: 1rem;
+  color: var(--accent, #d06878);
   margin-bottom: 0.75rem;
   text-shadow: 2px 2px 0 var(--shadow);
   letter-spacing: 0.05em;
@@ -572,7 +597,7 @@ h1 {
 [data-theme="light"] .modal-content h3 { text-shadow: 2px 2px 0 var(--shadow); }
 
 .modal-sub {
-  font-size: 0.45rem;
+  font-size: 0.85rem;
   color: var(--text-dim);
   margin-bottom: 0.5rem;
   line-height: 2.2;
@@ -584,12 +609,12 @@ h1 {
   display: block;
   width: 100%;
   margin-top: 1rem;
-  padding: 0.8rem;
-  background: var(--accent, #c0566a);
-  color: #fff;
+  padding: 0.85rem;
+  background: var(--accent, #d06878);
+  color: #0e0d1c;
   border: none;
   font-family: 'Press Start 2P', monospace;
-  font-size: 0.6rem;
+  font-size: 1rem;
   cursor: pointer;
   box-shadow: 4px 4px 0 var(--shadow);
   transition: transform 0.08s, box-shadow 0.08s;
@@ -610,23 +635,26 @@ h1 {
 /* Danger variant — XP reset confirm */
 .got-it-btn--danger {
   background: #a83030;
+  color: #fff;
 }
 
 .got-it-btn--danger:hover {
   background: #8c2424;
 }
 
+[data-theme="light"] .got-it-btn { color: #fff; }
+
 /* Cancel / go-back button */
 .picker-cancel-btn {
   display: block;
   width: 100%;
   margin-top: 0.5rem;
-  padding: 0.65rem;
+  padding: 0.7rem;
   background: none;
   border: 2px solid var(--border);
   color: var(--text-dim);
   font-family: 'Press Start 2P', monospace;
-  font-size: 0.55rem;
+  font-size: 0.85rem;
   cursor: pointer;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -650,7 +678,7 @@ h1 {
 }
 
 .xp-warning-box p {
-  font-size: 0.45rem;
+  font-size: 0.85rem;
   color: var(--text);
   line-height: 2.2;
   letter-spacing: 0.03em;
@@ -683,24 +711,24 @@ h1 {
 }
 
 .pet-card:hover {
-  border-color: var(--pet-color, #c0566a);
+  border-color: var(--pet-color, #d06878);
   transform: translateY(-2px);
   box-shadow: 4px 4px 0 var(--shadow);
 }
 
 .pet-card-selected {
-  border-color: var(--pet-color, #c0566a);
-  box-shadow: 3px 3px 0 var(--pet-color, #c0566a);
+  border-color: var(--pet-color, #d06878);
+  box-shadow: 3px 3px 0 var(--pet-color, #d06878);
 }
 
 .pet-card-name {
-  font-size: 0.45rem;
+  font-size: 0.75rem;
   color: var(--text);
   letter-spacing: 0.03em;
 }
 
 .pet-card-desc {
-  font-size: 0.38rem;
+  font-size: 0.65rem;
   color: var(--text-dim);
   line-height: 1.8;
 }
@@ -717,13 +745,37 @@ h1 {
 }
 
 .welcome-instructions li {
-  font-size: 0.45rem;
+  font-size: 1rem;
   color: var(--text);
   line-height: 2;
   letter-spacing: 0.03em;
   padding: 0.5rem 0.6rem;
   background: var(--bg-card);
-  border-left: 3px solid var(--accent, #c0566a);
+  border-left: 3px solid var(--accent, #d06878);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FOCUS INDICATORS  (WCAG 2.1 AA 2.4.7)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Global reset: browsers style :focus broadly; we only target keyboard focus */
+:focus { outline: none; }
+
+.btn:focus-visible,
+.got-it-btn:focus-visible,
+.picker-cancel-btn:focus-visible,
+.settings-btn:focus-visible,
+.theme-toggle:focus-visible {
+  outline: 3px solid var(--accent, #d06878);
+  outline-offset: 3px;
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--accent, #d06878) 28%, transparent),
+    3px 3px 0 var(--shadow);
+}
+
+.pet-card:focus-visible {
+  outline: 3px solid var(--pet-color, #d06878);
+  outline-offset: 3px;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -742,9 +794,9 @@ h1 {
   .settings           { max-width: 520px; }
   .modal-wide         { max-width: 560px; }
   .pet-frame          { width: 120px; height: 120px; }
-  h1                  { font-size: 0.68rem; }
-  .btn                { padding: 0.8rem 1.3rem; font-size: 0.62rem; min-height: 44px; }
-  .got-it-btn         { font-size: 0.65rem; min-height: 44px; }
+  h1                  { font-size: 1rem; }
+  .btn                { padding: 0.85rem 1.4rem; font-size: 1rem; min-height: 44px; }
+  .got-it-btn         { font-size: 1rem; min-height: 44px; }
   .picker-cancel-btn  { min-height: 44px; }
   .pet-card           { padding: 0.75rem 0.5rem; }
 }
@@ -753,33 +805,34 @@ h1 {
 @media (max-width: 600px) {
   .App                { padding: 1rem 0.75rem 2rem; }
   .top-bar            { margin-bottom: 0.75rem; }
-  h1                  { font-size: 0.48rem; }
+  h1                  { font-size: 0.7rem; }
 
   /* Timer */
   .timer-display      { font-size: clamp(2.8rem, 20vw, 4.5rem); }
 
   /* Touch-friendly buttons — minimum 44 px tap target */
-  .btn                { padding: 0.75rem 1rem; font-size: 0.52rem; min-height: 44px; }
-  .got-it-btn         { font-size: 0.56rem; min-height: 44px; }
-  .picker-cancel-btn  { min-height: 44px; }
+  .btn                { padding: 0.8rem 1rem; font-size: 0.85rem; min-height: 48px; }
+  .got-it-btn         { font-size: 0.85rem; min-height: 48px; }
+  .picker-cancel-btn  { font-size: 0.75rem; min-height: 48px; }
   .settings-btn,
-  .theme-toggle       { min-height: 44px; min-width: 44px; }
+  .theme-toggle       { min-height: 48px; min-width: 48px; }
 
   /* Controls */
-  .controls           { gap: 0.4rem; }
+  .controls           { gap: 0.5rem; }
 
   /* Pet picker — 2 columns on narrow phones */
   .pet-picker         { grid-template-columns: repeat(2, 1fr); gap: 0.4rem; }
-  .pet-card           { padding: 0.55rem 0.3rem; }
+  .pet-card           { padding: 0.6rem 0.3rem; }
 
   /* Modals */
   .modal-content      { padding: 1rem 0.85rem; }
   .modal-wide         { max-width: 100%; }
 
   /* Settings grid — tighten on small screens */
-  .settings           { column-gap: 0.35rem; row-gap: 0.45rem; font-size: 0.43rem; max-width: 240px; }
-  .settings select { font-size: 0.52rem; }
+  .settings           { column-gap: 0.4rem; row-gap: 0.5rem; font-size: 0.65rem; max-width: 300px; }
+  .settings select,
+  .settings input[type="number"] { font-size: 0.75rem; }
 
   /* Welcome list */
-  .welcome-instructions li { font-size: 0.43rem; }
+  .welcome-instructions li { font-size: 0.85rem; }
 }
