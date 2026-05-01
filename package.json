@@ -1,5 +1,5 @@
 {
-  "name": "pomodoro-gamefied",
+  "name": "ascendi",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -41,5 +41,5 @@
   "devDependencies": {
     "gh-pages": "^6.3.0"
   },
-  "homepage": "https://MariaGirones.github.io/pomodoro-gamefied"
+  "homepage": "https://mariagirones.github.io/Ascendi"
 }
