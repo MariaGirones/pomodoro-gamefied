@@ -122,7 +122,7 @@ body {
 }
 
 h1 {
-  font-size: 0.48rem;
+  font-size: 0.55rem;
   color: var(--accent, #ff2255);
   letter-spacing: 0.06em;
   text-shadow: 2px 2px 0 var(--shadow);
@@ -163,7 +163,7 @@ h1 {
   border: 2px solid var(--border);
   color: var(--text-dim);
   font-family: 'Press Start 2P', monospace;
-  font-size: 0.45rem;
+  font-size: 0.52rem;
   padding: 0.35rem 0.5rem;
   cursor: pointer;
   box-shadow: 2px 2px 0 var(--shadow);
@@ -225,7 +225,7 @@ h1 {
   bottom: 2px;
   right: 2px;
   font-family: 'Press Start 2P', monospace;
-  font-size: 0.38rem;
+  font-size: 0.42rem;
   color: var(--pet-color, #ff2255);
   background: rgba(0, 0, 0, 0.75);
   padding: 1px 3px;
@@ -237,7 +237,7 @@ h1 {
 [data-theme="light"] .pet-stage-badge { background: rgba(255, 255, 255, 0.85); }
 
 .pet-name {
-  font-size: 0.55rem;
+  font-size: 0.65rem;
   color: var(--text);
   text-shadow: 1px 1px 0 var(--shadow);
   letter-spacing: 0.06em;
@@ -277,7 +277,7 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  font-size: 0.42rem;
+  font-size: 0.5rem;
 }
 
 .xp-count  { color: var(--xp-fill); }
@@ -336,7 +336,7 @@ h1 {
 .xp-stage-labels {
   position: relative;
   height: 12px;
-  font-size: 0.38rem;
+  font-size: 0.42rem;
   color: var(--text-muted);
   letter-spacing: 0.04em;
 }
@@ -371,14 +371,14 @@ h1 {
 }
 
 .mode-label {
-  font-size: 0.55rem;
+  font-size: 0.65rem;
   color: var(--accent, #ff2255);
   text-shadow: 2px 2px 0 var(--shadow);
   letter-spacing: 0.05em;
 }
 
 .sub-label {
-  font-size: 0.38rem;
+  font-size: 0.48rem;
   color: var(--text-dim);
   letter-spacing: 0.03em;
 }
@@ -449,10 +449,10 @@ h1 {
 }
 
 .btn {
-  padding: 0.6rem 1rem;
+  padding: 0.65rem 1.1rem;
   border: 2px solid transparent;
   font-family: 'Press Start 2P', monospace;
-  font-size: 0.48rem;
+  font-size: 0.58rem;
   cursor: pointer;
   background: var(--accent, #ff2255);
   color: #fff;
@@ -496,8 +496,8 @@ h1 {
   grid-template-columns: 1fr auto auto;
   align-items: center;
   column-gap: 0.5rem;
-  row-gap: 0.45rem;
-  font-size: 0.38rem;
+  row-gap: 0.5rem;
+  font-size: 0.45rem;
   color: var(--text-dim);
   width: 100%;
   max-width: 260px;
@@ -507,12 +507,12 @@ h1 {
 .settings label { letter-spacing: 0.04em; }
 
 .settings select {
-  padding: 0.3rem 0.25rem;
+  padding: 0.35rem 0.3rem;
   border: 2px solid var(--border);
   background: var(--bg-card);
   color: var(--text);
   font-family: 'Press Start 2P', monospace;
-  font-size: 0.48rem;
+  font-size: 0.55rem;
   text-align: center;
   box-shadow: 2px 2px 0 var(--shadow);
   outline: none;
@@ -561,7 +561,7 @@ h1 {
 .modal-narrow { max-width: 320px; }
 
 .modal-content h3 {
-  font-size: 0.6rem;
+  font-size: 0.7rem;
   color: var(--accent, #ff2255);
   margin-bottom: 0.75rem;
   text-shadow: 2px 2px 0 var(--shadow);
@@ -572,7 +572,7 @@ h1 {
 [data-theme="light"] .modal-content h3 { text-shadow: 2px 2px 0 var(--shadow); }
 
 .modal-sub {
-  font-size: 0.38rem;
+  font-size: 0.45rem;
   color: var(--text-dim);
   margin-bottom: 0.5rem;
   line-height: 2.2;
@@ -584,12 +584,12 @@ h1 {
   display: block;
   width: 100%;
   margin-top: 1rem;
-  padding: 0.75rem;
+  padding: 0.8rem;
   background: var(--accent, #ff2255);
   color: #fff;
   border: none;
   font-family: 'Press Start 2P', monospace;
-  font-size: 0.52rem;
+  font-size: 0.6rem;
   cursor: pointer;
   box-shadow: 4px 4px 0 var(--shadow);
   transition: transform 0.08s, box-shadow 0.08s;
@@ -621,12 +621,12 @@ h1 {
   display: block;
   width: 100%;
   margin-top: 0.5rem;
-  padding: 0.6rem;
+  padding: 0.65rem;
   background: none;
   border: 2px solid var(--border);
   color: var(--text-dim);
   font-family: 'Press Start 2P', monospace;
-  font-size: 0.48rem;
+  font-size: 0.55rem;
   cursor: pointer;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -650,7 +650,7 @@ h1 {
 }
 
 .xp-warning-box p {
-  font-size: 0.38rem;
+  font-size: 0.45rem;
   color: var(--text);
   line-height: 2.2;
   letter-spacing: 0.03em;
@@ -694,13 +694,13 @@ h1 {
 }
 
 .pet-card-name {
-  font-size: 0.38rem;
+  font-size: 0.45rem;
   color: var(--text);
   letter-spacing: 0.03em;
 }
 
 .pet-card-desc {
-  font-size: 0.32rem;
+  font-size: 0.38rem;
   color: var(--text-dim);
   line-height: 1.8;
 }
@@ -717,7 +717,7 @@ h1 {
 }
 
 .welcome-instructions li {
-  font-size: 0.38rem;
+  font-size: 0.45rem;
   color: var(--text);
   line-height: 2;
   letter-spacing: 0.03em;
@@ -742,9 +742,9 @@ h1 {
   .settings           { max-width: 520px; }
   .modal-wide         { max-width: 560px; }
   .pet-frame          { width: 120px; height: 120px; }
-  h1                  { font-size: 0.6rem; }
-  .btn                { padding: 0.75rem 1.25rem; font-size: 0.52rem; min-height: 44px; }
-  .got-it-btn         { font-size: 0.56rem; min-height: 44px; }
+  h1                  { font-size: 0.68rem; }
+  .btn                { padding: 0.8rem 1.3rem; font-size: 0.62rem; min-height: 44px; }
+  .got-it-btn         { font-size: 0.65rem; min-height: 44px; }
   .picker-cancel-btn  { min-height: 44px; }
   .pet-card           { padding: 0.75rem 0.5rem; }
 }
@@ -753,14 +753,14 @@ h1 {
 @media (max-width: 600px) {
   .App                { padding: 1rem 0.75rem 2rem; }
   .top-bar            { margin-bottom: 0.75rem; }
-  h1                  { font-size: 0.4rem; }
+  h1                  { font-size: 0.48rem; }
 
   /* Timer */
   .timer-display      { font-size: clamp(2.8rem, 20vw, 4.5rem); }
 
   /* Touch-friendly buttons — minimum 44 px tap target */
-  .btn                { padding: 0.7rem 0.9rem; font-size: 0.44rem; min-height: 44px; }
-  .got-it-btn         { font-size: 0.48rem; min-height: 44px; }
+  .btn                { padding: 0.75rem 1rem; font-size: 0.52rem; min-height: 44px; }
+  .got-it-btn         { font-size: 0.56rem; min-height: 44px; }
   .picker-cancel-btn  { min-height: 44px; }
   .settings-btn,
   .theme-toggle       { min-height: 44px; min-width: 44px; }
@@ -777,9 +777,9 @@ h1 {
   .modal-wide         { max-width: 100%; }
 
   /* Settings grid — tighten on small screens */
-  .settings           { column-gap: 0.35rem; row-gap: 0.4rem; font-size: 0.36rem; max-width: 220px; }
-  .settings select { font-size: 0.44rem; }
+  .settings           { column-gap: 0.35rem; row-gap: 0.45rem; font-size: 0.43rem; max-width: 240px; }
+  .settings select { font-size: 0.52rem; }
 
   /* Welcome list */
-  .welcome-instructions li { font-size: 0.36rem; }
+  .welcome-instructions li { font-size: 0.43rem; }
 }
