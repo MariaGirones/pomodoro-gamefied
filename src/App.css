@@ -1,51 +1,51 @@
 /* ── Theme tokens ─────────────────────────────────────────────────────────── */
 
 :root {
-  /* Dark (default) */
-  --bg:          #0d0d1a;
-  --bg-panel:    #1a1a2e;
-  --bg-card:     #16213e;
-  --text:        #e0e0ff;
-  --text-dim:    #6677aa;
-  --text-muted:  #334466;
-  --border:      #2a2a4a;
-  --border-hi:   #445588;
-  --shadow:      #000;
+  /* Dark (default) — deep indigo base */
+  --bg:          #0e0d1c;
+  --bg-panel:    #181628;
+  --bg-card:     #131122;
+  --text:        #cac4e0;
+  --text-dim:    #5a5480;
+  --text-muted:  #2c2a48;
+  --border:      #232140;
+  --border-hi:   #3d3965;
+  --shadow:      rgba(0, 0, 0, 0.65);
 
-  --xp-track:    #0a0a15;
-  --xp-fill:     #ffe600;
-  --xp-border:   #cc9900;
+  --xp-track:    #09080f;
+  --xp-fill:     #c48a28;
+  --xp-border:   #7a5512;
 
-  --btn-sec-bg:      #1e2d4a;
-  --btn-sec-hover:   #2a3d60;
-  --btn-sec-text:    #aabbdd;
+  --btn-sec-bg:      #1c1a35;
+  --btn-sec-hover:   #27254a;
+  --btn-sec-text:    #8480b8;
 }
 
 [data-theme="light"] {
-  --bg:          #f0e8ff;
-  --bg-panel:    #ffe8f8;
-  --bg-card:     #ffd8f0;
-  --text:        #1a0833;
-  --text-dim:    #7755aa;
-  --text-muted:  #bb99cc;
-  --border:      #ddc0ee;
-  --border-hi:   #bb88dd;
-  --shadow:      rgba(80, 0, 120, 0.35);
+  --bg:          #f4eeea;
+  --bg-panel:    #eee5f8;
+  --bg-card:     #e8d8f4;
+  --text:        #1c1530;
+  --text-dim:    #6a5580;
+  --text-muted:  #c0add5;
+  --border:      #d8c8e8;
+  --border-hi:   #bcaad0;
+  --shadow:      rgba(28, 0, 56, 0.18);
 
-  --xp-track:    #e0ccf0;
-  --xp-fill:     #ff8800;
-  --xp-border:   #cc6600;
+  --xp-track:    #e5daf0;
+  --xp-fill:     #c47818;
+  --xp-border:   #9a5a10;
 
-  --btn-sec-bg:    #e0c0f8;
-  --btn-sec-hover: #d0a8f0;
-  --btn-sec-text:  #4a2266;
+  --btn-sec-bg:    #e4d4f8;
+  --btn-sec-hover: #d8c5f0;
+  --btn-sec-text:  #4a2868;
 }
 
 /* ── Mode accent colours ──────────────────────────────────────────────────── */
 
-.App.mode-work       { --accent: #ff2255; --accent-dark: #cc0033; }
-.App.mode-shortBreak { --accent: #00ee88; --accent-dark: #00bb66; }
-.App.mode-longBreak  { --accent: #44aaff; --accent-dark: #2277cc; }
+.App.mode-work       { --accent: #c0566a; --accent-dark: #9e3d53; }
+.App.mode-shortBreak { --accent: #3aaa8e; --accent-dark: #2d886f; }
+.App.mode-longBreak  { --accent: #5888c8; --accent-dark: #3e6aa8; }
 
 /* ── Base ─────────────────────────────────────────────────────────────────── */
 
@@ -95,19 +95,19 @@ body {
   );
 }
 
-/* Alert flash */
-.App.alerting { animation: flash 0.4s ease 3; }
+/* Alert pulse — single slow fade, no strobing */
+.App.alerting { animation: session-end-pulse 1.4s ease 2; }
 
-@keyframes flash {
+@keyframes session-end-pulse {
   0%, 100% { background: var(--bg); }
-  50%       { background: #2a1a00; }
+  45%       { background: color-mix(in srgb, var(--accent, #c0566a) 12%, var(--bg)); }
 }
 
-[data-theme="light"] .App.alerting { animation: flash-light 0.4s ease 3; }
+[data-theme="light"] .App.alerting { animation: session-end-pulse-light 1.4s ease 2; }
 
-@keyframes flash-light {
+@keyframes session-end-pulse-light {
   0%, 100% { background: var(--bg); }
-  50%       { background: #fff3cd; }
+  45%       { background: color-mix(in srgb, var(--accent, #c0566a) 14%, var(--bg)); }
 }
 
 /* ── Top bar ──────────────────────────────────────────────────────────────── */
@@ -123,7 +123,7 @@ body {
 
 h1 {
   font-size: 0.55rem;
-  color: var(--accent, #ff2255);
+  color: var(--accent, #c0566a);
   letter-spacing: 0.06em;
   text-shadow: 2px 2px 0 var(--shadow);
   text-transform: uppercase;
@@ -204,8 +204,8 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--pet-bg, #1a1a2e);
-  border: 3px solid var(--pet-color, #ff2255);
+  background: var(--pet-bg, #181628);
+  border: 3px solid var(--pet-color, #c0566a);
   box-shadow:
     5px 5px 0 var(--shadow),
     inset 0 0 16px rgba(0, 0, 0, 0.6);
@@ -226,7 +226,7 @@ h1 {
   right: 2px;
   font-family: 'Press Start 2P', monospace;
   font-size: 0.42rem;
-  color: var(--pet-color, #ff2255);
+  color: var(--pet-color, #c0566a);
   background: rgba(0, 0, 0, 0.75);
   padding: 1px 3px;
   letter-spacing: 0.04em;
@@ -372,7 +372,7 @@ h1 {
 
 .mode-label {
   font-size: 0.65rem;
-  color: var(--accent, #ff2255);
+  color: var(--accent, #c0566a);
   text-shadow: 2px 2px 0 var(--shadow);
   letter-spacing: 0.05em;
 }
@@ -383,25 +383,25 @@ h1 {
   letter-spacing: 0.03em;
 }
 
-/* Timer digits — glowing neon style */
+/* Timer digits — soft ambient glow */
 .timer-display {
   font-size: clamp(3rem, 14vw, 5.5rem);
-  color: var(--accent, #ff2255);
+  color: var(--accent, #c0566a);
   line-height: 1;
   margin: 0.5rem 0 0.75rem;
   letter-spacing: 0.05em;
   font-variant-numeric: tabular-nums;
   text-shadow:
-    0 0 18px color-mix(in srgb, var(--accent, #ff2255) 70%, transparent),
-    0 0 40px color-mix(in srgb, var(--accent, #ff2255) 35%, transparent),
-    4px 4px 0 var(--shadow);
-  transition: color 0.5s ease;
+    0 0 22px color-mix(in srgb, var(--accent, #c0566a) 42%, transparent),
+    0 0 50px color-mix(in srgb, var(--accent, #c0566a) 18%, transparent),
+    3px 3px 0 var(--shadow);
+  transition: color 0.5s ease, text-shadow 0.5s ease;
 }
 
 [data-theme="light"] .timer-display {
   text-shadow:
-    0 0 10px color-mix(in srgb, var(--accent, #ff2255) 45%, transparent),
-    3px 3px 0 var(--shadow);
+    0 0 14px color-mix(in srgb, var(--accent, #c0566a) 28%, transparent),
+    2px 2px 0 var(--shadow);
 }
 
 /* ── Cycle dots ────────────────────────────────────────────────────────────── */
@@ -454,7 +454,7 @@ h1 {
   font-family: 'Press Start 2P', monospace;
   font-size: 0.58rem;
   cursor: pointer;
-  background: var(--accent, #ff2255);
+  background: var(--accent, #c0566a);
   color: #fff;
   box-shadow: 3px 3px 0 var(--shadow);
   transition: transform 0.08s, box-shadow 0.08s, background 0.15s;
@@ -464,7 +464,7 @@ h1 {
 }
 
 .btn:hover:not(:disabled) {
-  background: var(--accent-dark, #cc0033);
+  background: var(--accent-dark, #9e3d53);
   transform: translate(1px, 1px);
   box-shadow: 2px 2px 0 var(--shadow);
 }
@@ -521,7 +521,7 @@ h1 {
   -webkit-appearance: none;
 }
 
-.settings select:focus  { border-color: var(--accent, #ff2255); }
+.settings select:focus  { border-color: var(--accent, #c0566a); }
 .settings select:disabled { opacity: 0.35; cursor: not-allowed; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -545,7 +545,7 @@ h1 {
 
 .modal-content {
   background: var(--bg-panel);
-  border: 3px solid var(--accent, #ff2255);
+  border: 3px solid var(--accent, #c0566a);
   box-shadow: 6px 6px 0 var(--shadow);
   padding: 1.5rem 1.25rem;
   width: 100%;
@@ -562,7 +562,7 @@ h1 {
 
 .modal-content h3 {
   font-size: 0.7rem;
-  color: var(--accent, #ff2255);
+  color: var(--accent, #c0566a);
   margin-bottom: 0.75rem;
   text-shadow: 2px 2px 0 var(--shadow);
   letter-spacing: 0.05em;
@@ -585,7 +585,7 @@ h1 {
   width: 100%;
   margin-top: 1rem;
   padding: 0.8rem;
-  background: var(--accent, #ff2255);
+  background: var(--accent, #c0566a);
   color: #fff;
   border: none;
   font-family: 'Press Start 2P', monospace;
@@ -609,11 +609,11 @@ h1 {
 
 /* Danger variant — XP reset confirm */
 .got-it-btn--danger {
-  background: #cc2200;
+  background: #a83030;
 }
 
 .got-it-btn--danger:hover {
-  background: #aa1a00;
+  background: #8c2424;
 }
 
 /* Cancel / go-back button */
@@ -640,8 +640,8 @@ h1 {
 
 /* XP warning text block */
 .xp-warning-box {
-  background: color-mix(in srgb, #cc2200 12%, var(--bg-card));
-  border: 2px solid #cc2200;
+  background: color-mix(in srgb, #a83030 12%, var(--bg-card));
+  border: 2px solid #a83030;
   padding: 0.75rem;
   margin: 0.75rem 0;
   display: flex;
@@ -683,14 +683,14 @@ h1 {
 }
 
 .pet-card:hover {
-  border-color: var(--pet-color, #ff2255);
+  border-color: var(--pet-color, #c0566a);
   transform: translateY(-2px);
   box-shadow: 4px 4px 0 var(--shadow);
 }
 
 .pet-card-selected {
-  border-color: var(--pet-color, #ff2255);
-  box-shadow: 3px 3px 0 var(--pet-color, #ff2255);
+  border-color: var(--pet-color, #c0566a);
+  box-shadow: 3px 3px 0 var(--pet-color, #c0566a);
 }
 
 .pet-card-name {
@@ -723,7 +723,7 @@ h1 {
   letter-spacing: 0.03em;
   padding: 0.5rem 0.6rem;
   background: var(--bg-card);
-  border-left: 3px solid var(--accent, #ff2255);
+  border-left: 3px solid var(--accent, #c0566a);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
